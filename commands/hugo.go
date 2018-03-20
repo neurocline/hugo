@@ -152,6 +152,7 @@ var (
 	verbose        bool
 	verboseLog     bool
 	debug          bool
+	trace          bool
 	quiet          bool
 )
 
@@ -275,6 +276,7 @@ func initBenchmarkBuildingFlags(cmd *cobra.Command) {
 func init() {
 	HugoCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 	HugoCmd.PersistentFlags().BoolVarP(&debug, "debug", "", false, "debug output")
+	HugoCmd.PersistentFlags().BoolVarP(&trace, "trace", "", false, "trace output")
 	HugoCmd.PersistentFlags().BoolVar(&logging, "log", false, "enable Logging")
 	HugoCmd.PersistentFlags().StringVar(&logFile, "logFile", "", "log File path (if set, logging enabled automatically)")
 	HugoCmd.PersistentFlags().BoolVar(&verboseLog, "verboseLog", false, "verbose logging")
@@ -305,38 +307,56 @@ func InitializeConfig(running bool, doWithCommandeer func(c *commandeer) error, 
 func createLogger(cfg config.Provider) (*jww.Notepad, error) {
 	var (
 		logHandle       = ioutil.Discard
-		logThreshold    = jww.LevelWarn
 		logFile         = cfg.GetString("logFile")
-		outHandle       = os.Stdout
-		stdoutThreshold = jww.LevelError
+		verboseLog      = cfg.GetBool("verboseLog")
+		isLogging       = false
 	)
 
-	if verboseLog || logging || (logFile != "") {
-		var err error
-		if logFile != "" {
-			logHandle, err = os.OpenFile(logFile, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
-			if err != nil {
-				return nil, newSystemError("Failed to open log file:", logFile, err)
-			}
-		} else {
-			logHandle, err = ioutil.TempFile("", "hugo")
-			if err != nil {
-				return nil, newSystemError(err)
-			}
+	// Create a logfile if asked for directly or implicitly
+	var err error
+	if logFile != "" {
+		isLogging = true
+		logHandle, err = os.OpenFile(logFile, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
+		if err != nil {
+			return nil, newSystemError("Failed to open log file:", logFile, err)
 		}
-	} else if !quiet && cfg.GetBool("verbose") {
+	} else if verboseLog || logging {
+		isLogging = true
+		logHandle, err = ioutil.TempFile("", "hugo")
+		if err != nil {
+			return nil, newSystemError(err)
+		}
+	}
+
+	// Set the appropriate logging level for console output
+	// must do --verbose --debug to get debug console out when logging
+	// must do --verbose --trace to get trace console out when logging
+	var verbose = cfg.GetBool("verbose")
+	var trace = cfg.GetBool("trace")
+	var debug = cfg.GetBool("debug")
+
+	var stdoutThreshold = jww.LevelError
+	switch {
+	case quiet:
+	case (!isLogging || verbose) && trace:
+		stdoutThreshold = jww.LevelTrace
+	case (!isLogging || verbose) && debug:
+		stdoutThreshold = jww.LevelDebug
+	case verbose:
 		stdoutThreshold = jww.LevelInfo
 	}
 
-	if cfg.GetBool("debug") {
-		stdoutThreshold = jww.LevelDebug
-	}
-
-	if verboseLog {
+	// Set the appropriate logging level for file output (quiet is ignored here)
+	// Note 1: verboseLog should be round-tripped to config so it can be set in config
+	// Note 2: log vs logging should be resolved so it can round-trip to config
+	var logThreshold = jww.LevelWarn
+	switch {
+	case verboseLog && trace:
+		logThreshold = jww.LevelTrace
+	case verboseLog && debug:
+		logThreshold = jww.LevelDebug
+	case verboseLog:
 		logThreshold = jww.LevelInfo
-		if cfg.GetBool("debug") {
-			logThreshold = jww.LevelDebug
-		}
 	}
 
 	// The global logger is used in some few cases.
@@ -345,11 +365,11 @@ func createLogger(cfg config.Provider) (*jww.Notepad, error) {
 	jww.SetStdoutThreshold(stdoutThreshold)
 	helpers.InitLoggers()
 
-	return jww.NewNotepad(stdoutThreshold, logThreshold, outHandle, logHandle, "", log.Ldate|log.Ltime), nil
+	return jww.NewNotepad(stdoutThreshold, logThreshold, os.Stdout, logHandle, "", log.Ldate|log.Ltime), nil
 }
 
 func (c *commandeer) initializeFlags(cmd *cobra.Command) {
-	persFlagKeys := []string{"debug", "verbose", "logFile"}
+	persFlagKeys := []string{"debug", "verbose", "logFile", "trace", "verboseLog"}
 	flagKeys := []string{
 		"cleanDestinationDir",
 		"buildDrafts",
