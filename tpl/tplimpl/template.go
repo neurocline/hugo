@@ -92,7 +92,7 @@ func (t *templateHandler) addError(name string, err error) {
 }
 
 func (t *templateHandler) Debug() {
-	fmt.Println("HTML templates:\n", t.html.t.DefinedTemplates())
+	fmt.Println("HTML templates:\n", t.html.tmpl.DefinedTemplates())
 	fmt.Println("\n\nText templates:\n", t.text.t.DefinedTemplates())
 }
 
@@ -128,7 +128,7 @@ func (t *templateHandler) Lookup(name string) *tpl.TemplateAdapter {
 func (t *templateHandler) clone(d *deps.Deps) *templateHandler {
 	c := &templateHandler{
 		Deps:   d,
-		html:   &htmlTemplates{t: template.Must(t.html.t.Clone()), overlays: make(map[string]*template.Template)},
+		html:   &htmlTemplates{tmpl: template.Must(t.html.tmpl.Clone()), overlays: make(map[string]*template.Template)},
 		text:   &textTemplates{t: texttemplate.Must(t.text.t.Clone()), overlays: make(map[string]*texttemplate.Template)},
 		errors: make([]*templateErr, 0),
 	}
@@ -160,7 +160,7 @@ func (t *templateHandler) clone(d *deps.Deps) *templateHandler {
 
 func newTemplateAdapter(deps *deps.Deps) *templateHandler {
 	htmlT := &htmlTemplates{
-		t:        template.New(""),
+		tmpl:     template.New(""),
 		overlays: make(map[string]*template.Template),
 	}
 	textT := &textTemplates{
@@ -179,7 +179,7 @@ func newTemplateAdapter(deps *deps.Deps) *templateHandler {
 type htmlTemplates struct {
 	funcster *templateFuncster
 
-	t *template.Template
+	tmpl *template.Template
 
 	// This looks, and is, strange.
 	// The clone is used by non-renderable content pages, and these need to be
@@ -206,7 +206,7 @@ func (t *htmlTemplates) Lookup(name string) *tpl.TemplateAdapter {
 }
 
 func (t *htmlTemplates) lookup(name string) *template.Template {
-	if templ := t.t.Lookup(name); templ != nil {
+	if templ := t.tmpl.Lookup(name); templ != nil {
 		return templ
 	}
 	if t.overlays != nil {
@@ -278,7 +278,7 @@ func (t *templateHandler) GetFuncs() map[string]interface{} {
 }
 
 func (t *htmlTemplates) setFuncs(funcMap map[string]interface{}) {
-	t.t.Funcs(funcMap)
+	t.tmpl.Funcs(funcMap)
 }
 
 func (t *textTemplates) setFuncs(funcMap map[string]interface{}) {
@@ -315,7 +315,7 @@ func (t *htmlTemplates) addTemplateIn(tt *template.Template, name, tpl string) e
 }
 
 func (t *htmlTemplates) addTemplate(name, tpl string) error {
-	return t.addTemplateIn(t.t, name, tpl)
+	return t.addTemplateIn(t.tmpl, name, tpl)
 }
 
 func (t *htmlTemplates) addLateTemplate(name, tpl string) error {
@@ -389,7 +389,7 @@ func (t *templateHandler) AddTemplate(name, tpl string) error {
 // earlier if we really need this, or make it lazy.
 func (t *templateHandler) MarkReady() {
 	if t.html.clone == nil {
-		t.html.clone = template.Must(t.html.t.Clone())
+		t.html.clone = template.Must(t.html.tmpl.Clone())
 		t.html.cloneClone = template.Must(t.html.clone.Clone())
 	}
 	if t.text.clone == nil {
@@ -540,7 +540,7 @@ func (t *htmlTemplates) handleMaster(name, overlayFilename, masterFilename strin
 			return err
 		}
 
-		masterTpl, err = t.t.New(overlayFilename).Parse(templ)
+		masterTpl, err = t.tmpl.New(overlayFilename).Parse(templ)
 		if err != nil {
 			return err
 		}
@@ -630,7 +630,7 @@ func (t *templateHandler) addTemplateFile(name, baseTemplatePath, path string) e
 		}
 
 		amberMu.Lock()
-		templ, err := t.compileAmberWithTemplate(b, path, t.html.t.New(templateName))
+		templ, err := t.compileAmberWithTemplate(b, path, t.html.tmpl.New(templateName))
 		amberMu.Unlock()
 		if err != nil {
 			return err
@@ -644,7 +644,7 @@ func (t *templateHandler) addTemplateFile(name, baseTemplatePath, path string) e
 			// We need to keep track of one ot the output format's shortcode template
 			// without knowing the rendering context.
 			clone := template.Must(templ.Clone())
-			t.html.t.AddParseTree(withoutExt, clone.Tree)
+			t.html.tmpl.AddParseTree(withoutExt, clone.Tree)
 		}
 
 		return nil

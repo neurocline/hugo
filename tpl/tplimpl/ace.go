@@ -46,7 +46,7 @@ func (t *templateHandler) addAceTemplate(name, basePath, innerPath string, baseC
 		return err
 	}
 
-	templ, err := ace.CompileResultWithTemplate(t.html.t.New(name), parsed, nil)
+	templ, err := ace.CompileResultWithTemplate(t.html.tmpl.New(name), parsed, nil)
 	if err != nil {
 		t.errors = append(t.errors, &templateErr{name: name, err: err})
 		return err
@@ -60,7 +60,7 @@ func (t *templateHandler) addAceTemplate(name, basePath, innerPath string, baseC
 		// We need to keep track of one ot the output format's shortcode template
 		// without knowing the rendering context.
 		clone := template.Must(templ.Clone())
-		t.html.t.AddParseTree(withoutExt, clone.Tree)
+		t.html.tmpl.AddParseTree(withoutExt, clone.Tree)
 	}
 
 	return nil
