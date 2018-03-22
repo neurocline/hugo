@@ -164,7 +164,7 @@ func CreateTemplateNames(d TemplateLookupDescriptor) (TemplateNames, error) {
 		baseTemplatedDir := strings.TrimPrefix(templateDir, baseLayoutDir)
 		baseTemplatedDir = strings.TrimPrefix(baseTemplatedDir, helpers.FilePathSeparator)
 
-		// Look for base template in the follwing order:
+		// Look for base template in the following order:
 		//   1. <current-path>/<template-name>-baseof.<outputFormat>(optional).<suffix>, e.g. list-baseof.<outputFormat>(optional).<suffix>.
 		//   2. <current-path>/baseof.<outputFormat>(optional).<suffix>
 		//   3. _default/<template-name>-baseof.<outputFormat>(optional).<suffix>, e.g. list-baseof.<outputFormat>(optional).<suffix>.

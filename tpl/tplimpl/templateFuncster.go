@@ -23,7 +23,7 @@ import (
 	"github.com/gohugoio/hugo/deps"
 )
 
-// Some of the template funcs are'nt entirely stateless.
+// Some of the template funcs aren't entirely stateless.
 type templateFuncster struct {
 	funcMap template.FuncMap
 

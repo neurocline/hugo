@@ -32,8 +32,10 @@ import (
 	"sync"
 
 	"github.com/gohugoio/hugo/deps"
+	// jww "github.com/spf13/jwalterweatherman"
 )
 
+// This is a list of all the registered namespaces
 var TemplateFuncsNamespaceRegistry []func(d *deps.Deps) *TemplateFuncsNamespace
 
 func AddTemplateFuncsNamespace(ns func(d *deps.Deps) *TemplateFuncsNamespace) {
@@ -59,8 +61,10 @@ func (t *TemplateFuncsNamespace) AddMethodMapping(m interface{}, aliases []strin
 	}
 
 	name := methodToName(m)
+	//jww.TRACE.Printf("Adding handler for %s:%s", t.Name, name)
 
 	// sanity check
+	// this should be done in test code, not at runtime
 	for _, e := range examples {
 		if e[0] == "" {
 			panic(t.Name + ": Empty example for " + name)
@@ -104,6 +108,9 @@ func methodToName(m interface{}) string {
 	name = strings.TrimSuffix(name, "-fm")
 	return name
 }
+
+//----------------------------------------------------
+// What is this used for? Can't find any callers in the gohugoio/hugo repo.
 
 type goDocFunc struct {
 	Name        string

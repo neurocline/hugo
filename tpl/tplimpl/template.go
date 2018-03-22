@@ -334,7 +334,7 @@ func (t *textTemplates) addTemplateIn(tt *texttemplate.Template, name, tpl strin
 	}
 
 	if strings.Contains(name, "shortcodes") {
-		// We need to keep track of one ot the output format's shortcode template
+		// We need to keep track of one of the output format's shortcode template
 		// without knowing the rendering context.
 		withoutExt := strings.TrimSuffix(name, path.Ext(name))
 		clone := texttemplate.Must(templ.Clone())
