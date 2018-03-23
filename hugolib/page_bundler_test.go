@@ -301,6 +301,10 @@ func TestMultilingualDisableLanguage(t *testing.T) {
 }
 
 func TestPageBundlerSiteWitSymbolicLinksInContent(t *testing.T) {
+	if runtime.GOOS == "windows" && os.Getenv("CI") == "" {
+		t.Skip("Skip TestPageBundlerSiteWitSymbolicLinksInContent as os.Symlink needs administrator rights on Windows")
+	}
+
 	assert := require.New(t)
 	cfg, fs, workDir := newTestBundleSymbolicSources(t)
 
