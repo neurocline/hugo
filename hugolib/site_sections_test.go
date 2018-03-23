@@ -24,7 +24,7 @@ import (
 )
 
 func TestNestedSections(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	var (
 		assert  = require.New(t)

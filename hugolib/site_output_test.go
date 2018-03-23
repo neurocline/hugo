@@ -37,7 +37,7 @@ func TestSiteWithPageOutputs(t *testing.T) {
 }
 
 func doTestSiteWithPageOutputs(t *testing.T, outputs []string) {
-	t.Parallel()
+	t_Parallel(t)
 
 	outputsStr := strings.Replace(fmt.Sprintf("%q", outputs), " ", ", ", -1)
 

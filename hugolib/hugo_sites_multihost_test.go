@@ -7,7 +7,7 @@ import (
 )
 
 func TestMultihosts(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	assert := require.New(t)
 

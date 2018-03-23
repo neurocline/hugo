@@ -99,14 +99,14 @@ title: "Title"
 }
 
 func TestNonSC(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	// notice the syntax diff from 0.12, now comment delims must be added
 	CheckShortCodeMatch(t, "{{%/* movie 47238zzb */%}}", "{{% movie 47238zzb %}}", nil)
 }
 
 // Issue #929
 func TestHyphenatedSC(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	wt := func(tem tpl.TemplateHandler) error {
 
 		tem.AddTemplate("_internal/shortcodes/hyphenated-video.html", `Playing Video {{ .Get 0 }}`)
@@ -118,7 +118,7 @@ func TestHyphenatedSC(t *testing.T) {
 
 // Issue #1753
 func TestNoTrailingNewline(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	wt := func(tem tpl.TemplateHandler) error {
 		tem.AddTemplate("_internal/shortcodes/a.html", `{{ .Get 0 }}`)
 		return nil
@@ -128,7 +128,7 @@ func TestNoTrailingNewline(t *testing.T) {
 }
 
 func TestPositionalParamSC(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	wt := func(tem tpl.TemplateHandler) error {
 		tem.AddTemplate("_internal/shortcodes/video.html", `Playing Video {{ .Get 0 }}`)
 		return nil
@@ -142,7 +142,7 @@ func TestPositionalParamSC(t *testing.T) {
 }
 
 func TestPositionalParamIndexOutOfBounds(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	wt := func(tem tpl.TemplateHandler) error {
 		tem.AddTemplate("_internal/shortcodes/video.html", `Playing Video {{ .Get 1 }}`)
 		return nil
@@ -153,7 +153,7 @@ func TestPositionalParamIndexOutOfBounds(t *testing.T) {
 // some repro issues for panics in Go Fuzz testing
 
 func TestNamedParamSC(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	wt := func(tem tpl.TemplateHandler) error {
 		tem.AddTemplate("_internal/shortcodes/img.html", `<img{{ with .Get "src" }} src="{{.}}"{{end}}{{with .Get "class"}} class="{{.}}"{{end}}>`)
 		return nil
@@ -168,7 +168,7 @@ func TestNamedParamSC(t *testing.T) {
 
 // Issue #2294
 func TestNestedNamedMissingParam(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	wt := func(tem tpl.TemplateHandler) error {
 		tem.AddTemplate("_internal/shortcodes/acc.html", `<div class="acc">{{ .Inner }}</div>`)
 		tem.AddTemplate("_internal/shortcodes/div.html", `<div {{with .Get "class"}} class="{{ . }}"{{ end }}>{{ .Inner }}</div>`)
@@ -181,7 +181,7 @@ func TestNestedNamedMissingParam(t *testing.T) {
 }
 
 func TestIsNamedParamsSC(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	wt := func(tem tpl.TemplateHandler) error {
 		tem.AddTemplate("_internal/shortcodes/byposition.html", `<div id="{{ .Get 0 }}">`)
 		tem.AddTemplate("_internal/shortcodes/byname.html", `<div id="{{ .Get "id" }}">`)
@@ -197,7 +197,7 @@ func TestIsNamedParamsSC(t *testing.T) {
 }
 
 func TestInnerSC(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	wt := func(tem tpl.TemplateHandler) error {
 		tem.AddTemplate("_internal/shortcodes/inside.html", `<div{{with .Get "class"}} class="{{.}}"{{end}}>{{ .Inner }}</div>`)
 		return nil
@@ -208,7 +208,7 @@ func TestInnerSC(t *testing.T) {
 }
 
 func TestInnerSCWithMarkdown(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	wt := func(tem tpl.TemplateHandler) error {
 		tem.AddTemplate("_internal/shortcodes/inside.html", `<div{{with .Get "class"}} class="{{.}}"{{end}}>{{ .Inner }}</div>`)
 		return nil
@@ -222,7 +222,7 @@ func TestInnerSCWithMarkdown(t *testing.T) {
 }
 
 func TestInnerSCWithAndWithoutMarkdown(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	wt := func(tem tpl.TemplateHandler) error {
 		tem.AddTemplate("_internal/shortcodes/inside.html", `<div{{with .Get "class"}} class="{{.}}"{{end}}>{{ .Inner }}</div>`)
 		return nil
@@ -246,14 +246,14 @@ This is **plain** text.
 }
 
 func TestEmbeddedSC(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	CheckShortCodeMatch(t, "{{% test %}}", "This is a simple Test", nil)
 	CheckShortCodeMatch(t, `{{% figure src="/found/here" class="bananas orange" %}}`, "\n<figure class=\"bananas orange\">\n    \n        <img src=\"/found/here\" />\n    \n    \n</figure>\n", nil)
 	CheckShortCodeMatch(t, `{{% figure src="/found/here" class="bananas orange" caption="This is a caption" %}}`, "\n<figure class=\"bananas orange\">\n    \n        <img src=\"/found/here\" alt=\"This is a caption\" />\n    \n    \n    <figcaption>\n        <p>\n        This is a caption\n        \n            \n        \n        </p> \n    </figcaption>\n    \n</figure>\n", nil)
 }
 
 func TestNestedSC(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	wt := func(tem tpl.TemplateHandler) error {
 		tem.AddTemplate("_internal/shortcodes/scn1.html", `<div>Outer, inner is {{ .Inner }}</div>`)
 		tem.AddTemplate("_internal/shortcodes/scn2.html", `<div>SC2</div>`)
@@ -265,7 +265,7 @@ func TestNestedSC(t *testing.T) {
 }
 
 func TestNestedComplexSC(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	wt := func(tem tpl.TemplateHandler) error {
 		tem.AddTemplate("_internal/shortcodes/row.html", `-row-{{ .Inner}}-rowStop-`)
 		tem.AddTemplate("_internal/shortcodes/column.html", `-col-{{.Inner    }}-colStop-`)
@@ -281,7 +281,7 @@ func TestNestedComplexSC(t *testing.T) {
 }
 
 func TestParentShortcode(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	wt := func(tem tpl.TemplateHandler) error {
 		tem.AddTemplate("_internal/shortcodes/r1.html", `1: {{ .Get "pr1" }} {{ .Inner }}`)
 		tem.AddTemplate("_internal/shortcodes/r2.html", `2: {{ .Parent.Get "pr1" }}{{ .Get "pr2" }} {{ .Inner }}`)
@@ -294,44 +294,44 @@ func TestParentShortcode(t *testing.T) {
 }
 
 func TestFigureOnlySrc(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	CheckShortCodeMatch(t, `{{< figure src="/found/here" >}}`, "\n<figure>\n    \n        <img src=\"/found/here\" />\n    \n    \n</figure>\n", nil)
 }
 
 func TestFigureImgWidth(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	CheckShortCodeMatch(t, `{{% figure src="/found/here" class="bananas orange" alt="apple" width="100px" %}}`, "\n<figure class=\"bananas orange\">\n    \n        <img src=\"/found/here\" alt=\"apple\" width=\"100px\" />\n    \n    \n</figure>\n", nil)
 }
 
 func TestFigureImgHeight(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	CheckShortCodeMatch(t, `{{% figure src="/found/here" class="bananas orange" alt="apple" height="100px" %}}`, "\n<figure class=\"bananas orange\">\n    \n        <img src=\"/found/here\" alt=\"apple\" height=\"100px\" />\n    \n    \n</figure>\n", nil)
 }
 
 func TestFigureImgWidthAndHeight(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	CheckShortCodeMatch(t, `{{% figure src="/found/here" class="bananas orange" alt="apple" width="50" height="100" %}}`, "\n<figure class=\"bananas orange\">\n    \n        <img src=\"/found/here\" alt=\"apple\" width=\"50\" height=\"100\" />\n    \n    \n</figure>\n", nil)
 }
 
 func TestFigureLinkNoTarget(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	CheckShortCodeMatch(t, `{{< figure src="/found/here" link="/jump/here/on/clicking" >}}`, "\n<figure>\n    <a href=\"/jump/here/on/clicking\">\n        <img src=\"/found/here\" />\n    </a>\n    \n</figure>\n", nil)
 }
 
 func TestFigureLinkWithTarget(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	CheckShortCodeMatch(t, `{{< figure src="/found/here" link="/jump/here/on/clicking" target="_self" >}}`, "\n<figure>\n    <a href=\"/jump/here/on/clicking\" target=\"_self\">\n        <img src=\"/found/here\" />\n    </a>\n    \n</figure>\n", nil)
 }
 
 func TestFigureLinkWithTargetAndRel(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	CheckShortCodeMatch(t, `{{< figure src="/found/here" link="/jump/here/on/clicking" target="_blank" rel="noopener" >}}`, "\n<figure>\n    <a href=\"/jump/here/on/clicking\" target=\"_blank\" rel=\"noopener\">\n        <img src=\"/found/here\" />\n    </a>\n    \n</figure>\n", nil)
 }
 
 const testScPlaceholderRegexp = "HAHAHUGOSHORTCODE-\\d+HBHB"
 
 func TestExtractShortcodes(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	for i, this := range []struct {
 		name             string
 		input            string
@@ -453,7 +453,7 @@ func TestExtractShortcodes(t *testing.T) {
 }
 
 func TestShortcodesInSite(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	baseURL := "http://foo/bar"
 
 	tests := []struct {
@@ -601,7 +601,7 @@ tags:
 }
 
 func TestShortcodeMultipleOutputFormats(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	siteConfig := `
 baseURL = "http://example.com/blog"
@@ -808,7 +808,7 @@ func BenchmarkReplaceShortcodeTokens(b *testing.B) {
 }
 
 func TestReplaceShortcodeTokens(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	for i, this := range []struct {
 		input        string
 		prefix       string

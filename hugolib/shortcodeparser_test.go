@@ -152,7 +152,7 @@ var shortCodeLexerTests = []shortCodeLexerTest{
 }
 
 func TestShortcodeLexer(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	for i, test := range shortCodeLexerTests {
 		items := collect(&test)
 		if !equal(items, test.items) {

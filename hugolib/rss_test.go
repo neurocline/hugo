@@ -22,7 +22,7 @@ import (
 )
 
 func TestRSSOutput(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	var (
 		cfg, fs = newTestCfg()
 		th      = testHelper{cfg, fs, t}

@@ -27,17 +27,17 @@ import (
 )
 
 func TestDisableKindsNoneDisabled(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	doTestDisableKinds(t)
 }
 
 func TestDisableKindsSomeDisabled(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	doTestDisableKinds(t, KindSection, kind404)
 }
 
 func TestDisableKindsOneDisabled(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	for _, kind := range allKinds {
 		if kind == KindPage {
 			// Turning off regular page generation have some side-effects
@@ -50,7 +50,7 @@ func TestDisableKindsOneDisabled(t *testing.T) {
 }
 
 func TestDisableKindsAllDisabled(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	doTestDisableKinds(t, allKinds...)
 }
 

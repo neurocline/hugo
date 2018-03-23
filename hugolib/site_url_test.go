@@ -40,7 +40,7 @@ var urlFakeSource = [][2]string{
 
 // Issue #1105
 func TestShouldNotAddTrailingSlashToBaseURL(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	for i, this := range []struct {
 		in       string
 		expected string
@@ -64,7 +64,7 @@ func TestShouldNotAddTrailingSlashToBaseURL(t *testing.T) {
 }
 
 func TestPageCount(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	cfg, fs := newTestCfg()
 	cfg.Set("uglyURLs", false)
 	cfg.Set("paginate", 10)
@@ -90,7 +90,7 @@ func TestPageCount(t *testing.T) {
 }
 
 func TestUglyURLsPerSection(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	assert := require.New(t)
 
@@ -127,7 +127,7 @@ Do not go gentle into that good night.
 }
 
 func TestSectionWithURLInFrontMatter(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	assert := require.New(t)
 

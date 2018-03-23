@@ -46,7 +46,7 @@ func pageMust(p *Page, err error) *Page {
 }
 
 func TestRenderWithInvalidTemplate(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	cfg, fs := newTestCfg()
 
 	writeSource(t, fs, filepath.Join("content", "foo.md"), "foo")
@@ -58,7 +58,7 @@ func TestRenderWithInvalidTemplate(t *testing.T) {
 }
 
 func TestDraftAndFutureRender(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	sources := [][2]string{
 		{filepath.FromSlash("sect/doc1.md"), "---\ntitle: doc1\ndraft: true\npublishdate: \"2414-05-29\"\n---\n# doc1\n*some content*"},
 		{filepath.FromSlash("sect/doc2.md"), "---\ntitle: doc2\ndraft: true\npublishdate: \"2012-05-29\"\n---\n# doc2\n*some content*"},
@@ -116,7 +116,7 @@ func TestDraftAndFutureRender(t *testing.T) {
 }
 
 func TestFutureExpirationRender(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	sources := [][2]string{
 		{filepath.FromSlash("sect/doc3.md"), "---\ntitle: doc1\nexpirydate: \"2400-05-29\"\n---\n# doc1\n*some content*"},
 		{filepath.FromSlash("sect/doc4.md"), "---\ntitle: doc2\nexpirydate: \"2000-05-29\"\n---\n# doc2\n*some content*"},
@@ -152,7 +152,7 @@ func TestFutureExpirationRender(t *testing.T) {
 }
 
 func TestLastChange(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	cfg, fs := newTestCfg()
 
@@ -170,7 +170,7 @@ func TestLastChange(t *testing.T) {
 
 // Issue #_index
 func TestPageWithUnderScoreIndexInFilename(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	cfg, fs := newTestCfg()
 
@@ -184,7 +184,7 @@ func TestPageWithUnderScoreIndexInFilename(t *testing.T) {
 
 // Issue #957
 func TestCrossrefs(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	for _, uglyURLs := range []bool{true, false} {
 		for _, relative := range []bool{true, false} {
 			doTestCrossrefs(t, relative, uglyURLs)
@@ -287,7 +287,7 @@ THE END.`, refShortcode),
 // Issue #939
 // Issue #1923
 func TestShouldAlwaysHaveUglyURLs(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	for _, uglyURLs := range []bool{true, false} {
 		doTestShouldAlwaysHaveUglyURLs(t, uglyURLs)
 	}
@@ -358,7 +358,7 @@ func doTestShouldAlwaysHaveUglyURLs(t *testing.T, uglyURLs bool) {
 }
 
 func TestNewSiteDefaultLang(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s, err := NewSiteDefaultLang()
 	require.NoError(t, err)
 	require.Equal(t, hugofs.Os, s.Fs.Source)
@@ -381,7 +381,7 @@ func TestShouldNotWriteZeroLengthFilesToDestination(t *testing.T) {
 
 // Issue #1176
 func TestSectionNaming(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	for _, canonify := range []bool{true, false} {
 		for _, uglify := range []bool{true, false} {
 			for _, pluralize := range []bool{true, false} {
@@ -456,7 +456,7 @@ func doTestSectionNaming(t *testing.T, canonify, uglify, pluralize bool) {
 
 }
 func TestSkipRender(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	sources := [][2]string{
 		{filepath.FromSlash("sect/doc1.html"), "---\nmarkup: markdown\n---\n# title\nsome *content*"},
 		{filepath.FromSlash("sect/doc2.html"), "<!doctype html><html><body>more content</body></html>"},
@@ -519,7 +519,7 @@ func TestSkipRender(t *testing.T) {
 }
 
 func TestAbsURLify(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	sources := [][2]string{
 		{filepath.FromSlash("sect/doc1.html"), "<!doctype html><html><head></head><body><a href=\"#frag1\">link</a></body></html>"},
 		{filepath.FromSlash("blue/doc2.html"), "---\nf: t\n---\n<!doctype html><html><body>more content</body></html>"},
@@ -615,7 +615,7 @@ var weightedSources = [][2]string{
 }
 
 func TestOrderedPages(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	cfg, fs := newTestCfg()
 	cfg.Set("baseURL", "http://auth/bub")
 
@@ -671,7 +671,7 @@ var groupedSources = [][2]string{
 }
 
 func TestGroupedPages(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Println("Recovered in f", r)
@@ -837,7 +837,7 @@ date = 2010-05-27T07:32:00Z
 Front Matter with weighted tags and categories`
 
 func TestWeightedTaxonomies(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	sources := [][2]string{
 		{filepath.FromSlash("sect/doc1.md"), pageWithWeightedTaxonomies2},
 		{filepath.FromSlash("sect/doc2.md"), pageWithWeightedTaxonomies1},
@@ -905,7 +905,7 @@ func setupLinkingMockSite(t *testing.T) *Site {
 }
 
 func TestRefLinking(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	site := setupLinkingMockSite(t)
 
 	currentPage := site.getPage(KindPage, "level2/level3/start.md")

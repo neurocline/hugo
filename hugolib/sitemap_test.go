@@ -36,7 +36,7 @@ const sitemapTemplate = `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/
 </urlset>`
 
 func TestSitemapOutput(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	for _, internal := range []bool{false, true} {
 		doTestSitemapOutput(t, internal)
 	}
@@ -85,7 +85,7 @@ func doTestSitemapOutput(t *testing.T, internal bool) {
 }
 
 func TestParseSitemap(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	expected := Sitemap{Priority: 3.0, Filename: "doo.xml", ChangeFreq: "3"}
 	input := map[string]interface{}{
 		"changefreq": "3",

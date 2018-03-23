@@ -26,7 +26,7 @@ import (
 )
 
 func TestByCountOrderOfTaxonomies(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	taxonomies := make(map[string]string)
 
 	taxonomies["tag"] = "tags"
@@ -62,7 +62,7 @@ func TestTaxonomiesWithAndWithoutContentFile(t *testing.T) {
 }
 
 func doTestTaxonomiesWithAndWithoutContentFile(t *testing.T, preserveTaxonomyNames, uglyURLs bool) {
-	t.Parallel()
+	t_Parallel(t)
 
 	siteConfig := `
 baseURL = "http://example.com/blog"

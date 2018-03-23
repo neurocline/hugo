@@ -454,7 +454,7 @@ func checkError(t *testing.T, err error, expected string) {
 }
 
 func TestDegenerateEmptyPageZeroLengthName(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 	_, err := s.NewPage("")
 	if err == nil {
@@ -465,7 +465,7 @@ func TestDegenerateEmptyPageZeroLengthName(t *testing.T) {
 }
 
 func TestDegenerateEmptyPage(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 	_, err := s.NewPageFrom(strings.NewReader(emptyPage), "test")
 	if err != nil {
@@ -623,7 +623,7 @@ func testAllMarkdownEnginesForPages(t *testing.T,
 }
 
 func TestCreateNewPage(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	assertFunc := func(t *testing.T, ext string, pages Pages) {
 		p := pages[0]
 
@@ -645,7 +645,7 @@ func TestCreateNewPage(t *testing.T) {
 }
 
 func TestSplitSummaryAndContent(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	for i, this := range []struct {
 		markup          string
 		content         string
@@ -696,7 +696,7 @@ func TestSplitSummaryAndContent(t *testing.T) {
 }
 
 func TestPageWithDelimiter(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	assertFunc := func(t *testing.T, ext string, pages Pages) {
 		p := pages[0]
 		checkPageTitle(t, p, "Simple")
@@ -711,7 +711,7 @@ func TestPageWithDelimiter(t *testing.T) {
 
 // Issue #1076
 func TestPageWithDelimiterForMarkdownThatCrossesBorder(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	cfg, fs := newTestCfg()
 
 	writeSource(t, fs, filepath.Join("content", "simple.md"), simplePageWithSummaryDelimiterAndMarkdownThatCrossesBorder)
@@ -750,7 +750,7 @@ Simple Page With Some Date`
 		return fmt.Sprintf(pageWithDate, weight, weight, field)
 	}
 
-	t.Parallel()
+	t_Parallel(t)
 	assertFunc := func(t *testing.T, ext string, pages Pages) {
 		assert.True(len(pages) > 0)
 		for _, p := range pages {
@@ -770,7 +770,7 @@ Simple Page With Some Date`
 
 // Issue #2601
 func TestPageRawContent(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	cfg, fs := newTestCfg()
 
 	writeSource(t, fs, filepath.Join("content", "raw.md"), `---
@@ -790,7 +790,7 @@ title: Raw
 }
 
 func TestPageWithShortCodeInSummary(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	assertFunc := func(t *testing.T, ext string, pages Pages) {
 		p := pages[0]
 		checkPageTitle(t, p, "Simple")
@@ -803,7 +803,7 @@ func TestPageWithShortCodeInSummary(t *testing.T) {
 }
 
 func TestPageWithEmbeddedScriptTag(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	assertFunc := func(t *testing.T, ext string, pages Pages) {
 		p := pages[0]
 		if ext == "ad" || ext == "rst" {
@@ -817,7 +817,7 @@ func TestPageWithEmbeddedScriptTag(t *testing.T) {
 }
 
 func TestPageWithAdditionalExtension(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	cfg, fs := newTestCfg()
 
 	writeSource(t, fs, filepath.Join("content", "simple.md"), simplePageWithAdditionalExtension)
@@ -848,7 +848,7 @@ func TestTableOfContents(t *testing.T) {
 }
 
 func TestPageWithMoreTag(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	assertFunc := func(t *testing.T, ext string, pages Pages) {
 		p := pages[0]
 		checkPageTitle(t, p, "Simple")
@@ -895,7 +895,7 @@ Here is the last report for commits in the year 2016. It covers hrev50718-hrev50
 }
 
 func TestPageWithDate(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	cfg, fs := newTestCfg()
 
 	writeSource(t, fs, filepath.Join("content", "simple.md"), simplePageRFC3339Date)
@@ -939,7 +939,7 @@ func TestPageWithLastmodFromGitInfo(t *testing.T) {
 }
 
 func TestPageWithFrontMatterConfig(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	for _, dateHandler := range []string{":filename", ":fileModTime"} {
 		t.Run(fmt.Sprintf("dateHandler=%q", dateHandler), func(t *testing.T) {
@@ -1003,7 +1003,7 @@ Content
 }
 
 func TestWordCountWithAllCJKRunesWithoutHasCJKLanguage(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	assertFunc := func(t *testing.T, ext string, pages Pages) {
 		p := pages[0]
 		if p.WordCount() != 8 {
@@ -1015,7 +1015,7 @@ func TestWordCountWithAllCJKRunesWithoutHasCJKLanguage(t *testing.T) {
 }
 
 func TestWordCountWithAllCJKRunesHasCJKLanguage(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	settings := map[string]interface{}{"hasCJKLanguage": true}
 
 	assertFunc := func(t *testing.T, ext string, pages Pages) {
@@ -1028,7 +1028,7 @@ func TestWordCountWithAllCJKRunesHasCJKLanguage(t *testing.T) {
 }
 
 func TestWordCountWithMainEnglishWithCJKRunes(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	settings := map[string]interface{}{"hasCJKLanguage": true}
 
 	assertFunc := func(t *testing.T, ext string, pages Pages) {
@@ -1047,7 +1047,7 @@ func TestWordCountWithMainEnglishWithCJKRunes(t *testing.T) {
 }
 
 func TestWordCountWithIsCJKLanguageFalse(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	settings := map[string]interface{}{
 		"hasCJKLanguage": true,
 	}
@@ -1069,7 +1069,7 @@ func TestWordCountWithIsCJKLanguageFalse(t *testing.T) {
 }
 
 func TestWordCount(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	assertFunc := func(t *testing.T, ext string, pages Pages) {
 		p := pages[0]
 		if p.WordCount() != 483 {
@@ -1091,7 +1091,7 @@ func TestWordCount(t *testing.T) {
 }
 
 func TestCreatePage(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	var tests = []struct {
 		r string
 	}{
@@ -1110,7 +1110,7 @@ func TestCreatePage(t *testing.T) {
 }
 
 func TestPageKind(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	const sep = helpers.FilePathSeparator
 	var tests = []struct {
 		file string
@@ -1164,7 +1164,7 @@ func TestPageKind(t *testing.T) {
 }
 
 func TestDegenerateInvalidFrontMatterShortDelim(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	var tests = []struct {
 		r   string
 		err string
@@ -1180,7 +1180,7 @@ func TestDegenerateInvalidFrontMatterShortDelim(t *testing.T) {
 }
 
 func TestShouldRenderContent(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	var tests = []struct {
 		text   string
 		render bool
@@ -1208,7 +1208,7 @@ func TestShouldRenderContent(t *testing.T) {
 
 // Issue #768
 func TestCalendarParamsVariants(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 	pageJSON, _ := s.NewPage("test/fileJSON.md")
 	_, _ = pageJSON.ReadFrom(strings.NewReader(pageWithCalendarJSONFrontmatter))
@@ -1225,7 +1225,7 @@ func TestCalendarParamsVariants(t *testing.T) {
 }
 
 func TestDifferentFrontMatterVarTypes(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 	page, _ := s.NewPage("test/file1.md")
 	_, _ = page.ReadFrom(strings.NewReader(pageWithVariousFrontmatterTypes))
@@ -1256,7 +1256,7 @@ func TestDifferentFrontMatterVarTypes(t *testing.T) {
 }
 
 func TestDegenerateInvalidFrontMatterLeadingWhitespace(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 	p, _ := s.NewPage("invalid/front/matter/leading/ws")
 	_, err := p.ReadFrom(strings.NewReader(invalidFrontmatterLadingWs))
@@ -1266,7 +1266,7 @@ func TestDegenerateInvalidFrontMatterLeadingWhitespace(t *testing.T) {
 }
 
 func TestSectionEvaluation(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 	page, _ := s.NewPage(filepath.FromSlash("blue/file1.md"))
 	page.ReadFrom(strings.NewReader(simplePage))
@@ -1276,7 +1276,7 @@ func TestSectionEvaluation(t *testing.T) {
 }
 
 func TestSliceToLower(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	tests := []struct {
 		value    []string
 		expected []string
@@ -1297,7 +1297,7 @@ func TestSliceToLower(t *testing.T) {
 }
 
 func TestReplaceDivider(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	tests := []struct {
 		content           string
@@ -1351,7 +1351,7 @@ func BenchmarkReplaceDivider(b *testing.B) {
 }
 
 func TestPagePaths(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	siteParmalinksSetting := map[string]string{
 		"post": ":year/:month/:day/:title/",
@@ -1397,7 +1397,7 @@ some content
 `
 
 func TestDraftAndPublishedFrontMatterError(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 	_, err := s.NewPageFrom(strings.NewReader(pageWithDraftAndPublished), "content/post/broken.md")
 	if err != ErrHasDraftAndPublished {
@@ -1419,7 +1419,7 @@ some content
 `
 
 func TestPublishedFrontMatter(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 	p, err := s.NewPageFrom(strings.NewReader(pagesWithPublishedFalse), "content/post/broken.md")
 	if err != nil {
@@ -1453,7 +1453,7 @@ some content
 }
 
 func TestDraft(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 	for _, draft := range []bool{true, false} {
 		for i, templ := range pagesDraftTemplate {
@@ -1508,7 +1508,7 @@ some content
 }
 
 func TestPageParams(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 	wantedMap := map[string]interface{}{
 		"tags": []string{"hugo", "web"},
@@ -1538,7 +1538,7 @@ social:
   twitter: "@jxxf"
   facebook: "https://example.com"
 ---`
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 	p, _ := s.NewPageFrom(strings.NewReader(exampleParams), "content/post/params.md")
 
@@ -1553,7 +1553,7 @@ social:
 }
 
 func TestPageSimpleMethods(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 	for i, this := range []struct {
 		assertFunc func(p *Page) bool
@@ -1574,7 +1574,7 @@ func TestPageSimpleMethods(t *testing.T) {
 
 func TestIndexPageSimpleMethods(t *testing.T) {
 	s := newTestSite(t)
-	t.Parallel()
+	t_Parallel(t)
 	for i, this := range []struct {
 		assertFunc func(n *Page) bool
 	}{
@@ -1593,7 +1593,7 @@ func TestIndexPageSimpleMethods(t *testing.T) {
 }
 
 func TestKind(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	// Add tests for these constants to make sure they don't change
 	require.Equal(t, "page", KindPage)
 	require.Equal(t, "home", KindHome)
@@ -1604,7 +1604,7 @@ func TestKind(t *testing.T) {
 }
 
 func TestTranslationKey(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	assert := require.New(t)
 	cfg, fs := newTestCfg()
 
@@ -1626,7 +1626,7 @@ func TestTranslationKey(t *testing.T) {
 }
 
 func TestChompBOM(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	const utf8BOM = "\xef\xbb\xbf"
 
 	cfg, fs := newTestCfg()
@@ -1654,7 +1654,7 @@ func compareObjects(a interface{}, b interface{}) bool {
 }
 
 func TestShouldBuild(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	var past = time.Date(2009, 11, 17, 20, 34, 58, 651387237, time.UTC)
 	var future = time.Date(2037, 11, 17, 20, 34, 58, 651387237, time.UTC)
 	var zero = time.Time{}
@@ -1703,7 +1703,7 @@ func TestShouldBuild(t *testing.T) {
 // "dot" in path: #1885 and #2110
 // disablePathToLower regression: #3374
 func TestPathIssues(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	for _, disablePathToLower := range []bool{false, true} {
 		for _, uglyURLs := range []bool{false, true} {
 			t.Run(fmt.Sprintf("disablePathToLower=%t,uglyURLs=%t", disablePathToLower, uglyURLs), func(t *testing.T) {

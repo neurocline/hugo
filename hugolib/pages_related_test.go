@@ -27,7 +27,7 @@ import (
 func TestRelated(t *testing.T) {
 	assert := require.New(t)
 
-	t.Parallel()
+	t_Parallel(t)
 
 	var (
 		cfg, fs = newTestCfg()

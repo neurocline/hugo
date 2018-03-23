@@ -23,7 +23,7 @@ import (
 )
 
 func TestPageCache(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	c1 := newPageCache()
 
 	changeFirst := func(p Pages) {

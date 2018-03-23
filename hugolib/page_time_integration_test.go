@@ -92,7 +92,7 @@ Page With Date HugoLong`
 )
 
 func TestDegenerateDateFrontMatter(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 	p, _ := s.NewPageFrom(strings.NewReader(pageWithInvalidDate), "page/with/invalid/date")
 	if p.Date != *new(time.Time) {
@@ -101,7 +101,7 @@ func TestDegenerateDateFrontMatter(t *testing.T) {
 }
 
 func TestParsingDateInFrontMatter(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 	tests := []struct {
 		buf string
@@ -150,7 +150,7 @@ func TestParsingDateInFrontMatter(t *testing.T) {
 
 // Temp test https://github.com/gohugoio/hugo/issues/3059
 func TestParsingDateParallel(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	var wg sync.WaitGroup
 

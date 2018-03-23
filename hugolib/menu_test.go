@@ -37,7 +37,7 @@ menu:
 )
 
 func TestSectionPagesMenu(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	siteConfig := `
 baseurl = "http://example.com/"

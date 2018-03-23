@@ -39,7 +39,7 @@ import (
 )
 
 func TestPageBundlerSite(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	for _, ugly := range []bool{false, true} {
 		t.Run(fmt.Sprintf("ugly=%t", ugly),
@@ -188,7 +188,7 @@ func TestPageBundlerSite(t *testing.T) {
 }
 
 func TestPageBundlerSiteMultilingual(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	for _, ugly := range []bool{false, true} {
 		t.Run(fmt.Sprintf("ugly=%t", ugly),
@@ -257,7 +257,7 @@ func TestPageBundlerSiteMultilingual(t *testing.T) {
 }
 
 func TestMultilingualDisableDefaultLanguage(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	assert := require.New(t)
 	cfg, _ := newTestBundleSourcesMultilingual(t)
@@ -272,7 +272,7 @@ func TestMultilingualDisableDefaultLanguage(t *testing.T) {
 }
 
 func TestMultilingualDisableLanguage(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	assert := require.New(t)
 	cfg, fs := newTestBundleSourcesMultilingual(t)
@@ -325,7 +325,7 @@ func TestPageBundlerSiteWitSymbolicLinksInContent(t *testing.T) {
 }
 
 func TestPageBundlerHeadless(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	cfg, fs := newTestCfg()
 	assert := require.New(t)

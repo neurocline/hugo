@@ -26,7 +26,7 @@ import (
 )
 
 func TestSplitPages(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 
 	pages := createTestPages(s, 21)
@@ -43,7 +43,7 @@ func TestSplitPages(t *testing.T) {
 }
 
 func TestSplitPageGroups(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 	pages := createTestPages(s, 21)
 	groups, _ := pages.GroupBy("Weight", "desc")
@@ -84,7 +84,7 @@ func TestSplitPageGroups(t *testing.T) {
 }
 
 func TestPager(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 	pages := createTestPages(s, 21)
 	groups, _ := pages.GroupBy("Weight", "desc")
@@ -151,7 +151,7 @@ func doTestPages(t *testing.T, paginator *paginator) {
 }
 
 func TestPagerNoPages(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 	pages := createTestPages(s, 0)
 	groups, _ := pages.GroupBy("Weight", "desc")
@@ -201,7 +201,7 @@ func doTestPagerNoPages(t *testing.T, paginator *paginator) {
 }
 
 func TestPaginationURLFactory(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	cfg, fs := newTestCfg()
 	cfg.Set("paginatePath", "zoo")
 
@@ -258,7 +258,7 @@ func TestPaginationURLFactory(t *testing.T) {
 }
 
 func TestPaginator(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	for _, useViper := range []bool{false, true} {
 		doTestPaginator(t, useViper)
 	}
@@ -313,7 +313,7 @@ func doTestPaginator(t *testing.T, useViper bool) {
 }
 
 func TestPaginatorWithNegativePaginate(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t, "paginate", -1)
 	n1, _ := newPageOutput(s.newHomePage(), false, output.HTMLFormat)
 	_, err := n1.Paginator()
@@ -321,14 +321,14 @@ func TestPaginatorWithNegativePaginate(t *testing.T) {
 }
 
 func TestPaginate(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	for _, useViper := range []bool{false, true} {
 		doTestPaginate(t, useViper)
 	}
 }
 
 func TestPaginatorURL(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	cfg, fs := newTestCfg()
 
 	cfg.Set("paginate", 2)
@@ -411,7 +411,7 @@ func doTestPaginate(t *testing.T, useViper bool) {
 }
 
 func TestInvalidOptions(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 	n1, _ := newPageOutput(s.newHomePage(), false, output.HTMLFormat)
 
@@ -424,7 +424,7 @@ func TestInvalidOptions(t *testing.T) {
 }
 
 func TestPaginateWithNegativePaginate(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	cfg, fs := newTestCfg()
 	cfg.Set("paginate", -1)
 
@@ -438,7 +438,7 @@ func TestPaginateWithNegativePaginate(t *testing.T) {
 }
 
 func TestPaginatePages(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 
 	groups, _ := createTestPages(s, 31).GroupBy("Weight", "desc")
@@ -456,7 +456,7 @@ func TestPaginatePages(t *testing.T) {
 
 // Issue #993
 func TestPaginatorFollowedByPaginateShouldFail(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t, "paginate", 10)
 	n1, _ := newPageOutput(s.newHomePage(), false, output.HTMLFormat)
 	n2, _ := newPageOutput(s.newHomePage(), false, output.HTMLFormat)
@@ -472,7 +472,7 @@ func TestPaginatorFollowedByPaginateShouldFail(t *testing.T) {
 }
 
 func TestPaginateFollowedByDifferentPaginateShouldFail(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t, "paginate", 10)
 
 	n1, _ := newPageOutput(s.newHomePage(), false, output.HTMLFormat)
@@ -495,7 +495,7 @@ func TestPaginateFollowedByDifferentPaginateShouldFail(t *testing.T) {
 }
 
 func TestProbablyEqualPageLists(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 	fivePages := createTestPages(s, 5)
 	zeroPages := createTestPages(s, 0)
@@ -531,7 +531,7 @@ func TestProbablyEqualPageLists(t *testing.T) {
 }
 
 func TestPage(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	urlFactory := func(page int) string {
 		return fmt.Sprintf("page/%d/", page)
 	}

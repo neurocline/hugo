@@ -18,7 +18,7 @@ import (
 )
 
 func Test404(t *testing.T) {
-	t.Parallel()
+    t_Parallel(t)
 
 	b := newTestSitesBuilder(t)
 	b.WithSimpleConfigFile().WithTemplatesAdded("404.html", "<html><body>Not Found!</body></html>")

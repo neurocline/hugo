@@ -22,7 +22,7 @@ import (
 )
 
 func TestLoadConfig(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	assert := require.New(t)
 
@@ -45,7 +45,7 @@ func TestLoadConfig(t *testing.T) {
 }
 
 func TestLoadMultiConfig(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	assert := require.New(t)
 
@@ -72,7 +72,7 @@ func TestLoadMultiConfig(t *testing.T) {
 }
 
 func TestLoadConfigFromTheme(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	assert := require.New(t)
 

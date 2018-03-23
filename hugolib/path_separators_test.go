@@ -26,7 +26,7 @@ Sample Text
 `
 
 func TestDegenerateMissingFolderInPageFilename(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 	p, err := s.NewPageFrom(strings.NewReader(simplePageYAML), filepath.Join("foobar"))
 	if err != nil {

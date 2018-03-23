@@ -32,6 +32,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+var disableParallel bool = false
+
 const ()
 
 type sitesBuilder struct {
@@ -584,4 +586,10 @@ func dumpPages(pages ...*Page) {
 
 func isCI() bool {
 	return os.Getenv("CI") != ""
+}
+
+func t_Parallel(t *testing.T) {
+	if !disableParallel {
+		t.Parallel()
+	}
 }

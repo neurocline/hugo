@@ -21,7 +21,7 @@ import (
 )
 
 func TestMergeLanguages(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	assert := require.New(t)
 
 	b := newTestSiteForLanguageMerge(t, 30)
@@ -70,7 +70,7 @@ func TestMergeLanguages(t *testing.T) {
 }
 
 func TestMergeLanguagesTemplate(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	b := newTestSiteForLanguageMerge(t, 15)
 	b.WithTemplates("home.html", `

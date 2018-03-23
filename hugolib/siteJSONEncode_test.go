@@ -26,7 +26,7 @@ import (
 // Testing prevention of cyclic refs in JSON encoding
 // May be smart to run with: -timeout 4000ms
 func TestEncodePage(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	cfg, fs := newTestCfg()
 
 	writeSource(t, fs, filepath.Join("content", "page.md"), `---

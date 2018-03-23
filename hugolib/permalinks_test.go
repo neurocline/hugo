@@ -52,7 +52,7 @@ var testdataPermalinks = []struct {
 }
 
 func TestPermalinkValidation(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	for _, item := range testdataPermalinks {
 		pp := pathPattern(item.spec)
 		have := pp.validate()
@@ -70,7 +70,7 @@ func TestPermalinkValidation(t *testing.T) {
 }
 
 func TestPermalinkExpansion(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 	page, err := s.NewPageFrom(strings.NewReader(simplePageJSON), "blue/test-page.md")
 

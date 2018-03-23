@@ -57,7 +57,7 @@ func preparePageGroupTestPages(t *testing.T) Pages {
 }
 
 func TestGroupByWithFieldNameArg(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	pages := preparePageGroupTestPages(t)
 	expect := PagesGroup{
 		{Key: 1, Pages: Pages{pages[3], pages[4]}},
@@ -75,7 +75,7 @@ func TestGroupByWithFieldNameArg(t *testing.T) {
 }
 
 func TestGroupByWithMethodNameArg(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	pages := preparePageGroupTestPages(t)
 	expect := PagesGroup{
 		{Key: "section1", Pages: Pages{pages[0], pages[1], pages[2]}},
@@ -92,7 +92,7 @@ func TestGroupByWithMethodNameArg(t *testing.T) {
 }
 
 func TestGroupByWithSectionArg(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	pages := preparePageGroupTestPages(t)
 	expect := PagesGroup{
 		{Key: "section1", Pages: Pages{pages[0], pages[1], pages[2]}},
@@ -109,7 +109,7 @@ func TestGroupByWithSectionArg(t *testing.T) {
 }
 
 func TestGroupByInReverseOrder(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	pages := preparePageGroupTestPages(t)
 	expect := PagesGroup{
 		{Key: 3, Pages: Pages{pages[0], pages[1]}},
@@ -127,7 +127,7 @@ func TestGroupByInReverseOrder(t *testing.T) {
 }
 
 func TestGroupByCalledWithEmptyPages(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	var pages Pages
 	groups, err := pages.GroupBy("Weight")
 	if err != nil {
@@ -139,7 +139,7 @@ func TestGroupByCalledWithEmptyPages(t *testing.T) {
 }
 
 func TestGroupByCalledWithUnavailableKey(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	pages := preparePageGroupTestPages(t)
 	_, err := pages.GroupBy("UnavailableKey")
 	if err == nil {
@@ -164,7 +164,7 @@ func (page *Page) dummyPageMethodReturnTwoValueForTest() (string, string) {
 }
 
 func TestGroupByCalledWithInvalidMethod(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	var err error
 	pages := preparePageGroupTestPages(t)
 
@@ -190,7 +190,7 @@ func TestGroupByCalledWithInvalidMethod(t *testing.T) {
 }
 
 func TestReverse(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	pages := preparePageGroupTestPages(t)
 
 	groups1, err := pages.GroupBy("Weight", "desc")
@@ -210,7 +210,7 @@ func TestReverse(t *testing.T) {
 }
 
 func TestGroupByParam(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	pages := preparePageGroupTestPages(t)
 	expect := PagesGroup{
 		{Key: "bar", Pages: Pages{pages[1], pages[3]}},
@@ -228,7 +228,7 @@ func TestGroupByParam(t *testing.T) {
 }
 
 func TestGroupByParamInReverseOrder(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	pages := preparePageGroupTestPages(t)
 	expect := PagesGroup{
 		{Key: "foo", Pages: Pages{pages[0], pages[2]}},
@@ -266,7 +266,7 @@ func TestGroupByParamCalledWithCapitalLetterString(t *testing.T) {
 }
 
 func TestGroupByParamCalledWithSomeUnavailableParams(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	pages := preparePageGroupTestPages(t)
 	delete(pages[1].params, "custom_param")
 	delete(pages[3].params, "custom_param")
@@ -286,7 +286,7 @@ func TestGroupByParamCalledWithSomeUnavailableParams(t *testing.T) {
 }
 
 func TestGroupByParamCalledWithEmptyPages(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	var pages Pages
 	groups, err := pages.GroupByParam("custom_param")
 	if err != nil {
@@ -298,7 +298,7 @@ func TestGroupByParamCalledWithEmptyPages(t *testing.T) {
 }
 
 func TestGroupByParamCalledWithUnavailableParam(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	pages := preparePageGroupTestPages(t)
 	_, err := pages.GroupByParam("unavailable_param")
 	if err == nil {
@@ -307,7 +307,7 @@ func TestGroupByParamCalledWithUnavailableParam(t *testing.T) {
 }
 
 func TestGroupByDate(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	pages := preparePageGroupTestPages(t)
 	expect := PagesGroup{
 		{Key: "2012-04", Pages: Pages{pages[4], pages[2], pages[0]}},
@@ -325,7 +325,7 @@ func TestGroupByDate(t *testing.T) {
 }
 
 func TestGroupByDateInReverseOrder(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	pages := preparePageGroupTestPages(t)
 	expect := PagesGroup{
 		{Key: "2012-01", Pages: Pages{pages[1]}},
@@ -343,7 +343,7 @@ func TestGroupByDateInReverseOrder(t *testing.T) {
 }
 
 func TestGroupByPublishDate(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	pages := preparePageGroupTestPages(t)
 	expect := PagesGroup{
 		{Key: "2012-04", Pages: Pages{pages[4], pages[2], pages[0]}},
@@ -361,7 +361,7 @@ func TestGroupByPublishDate(t *testing.T) {
 }
 
 func TestGroupByPublishDateInReverseOrder(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	pages := preparePageGroupTestPages(t)
 	expect := PagesGroup{
 		{Key: "2012-01", Pages: Pages{pages[1]}},
@@ -379,7 +379,7 @@ func TestGroupByPublishDateInReverseOrder(t *testing.T) {
 }
 
 func TestGroupByPublishDateWithEmptyPages(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	var pages Pages
 	groups, err := pages.GroupByPublishDate("2006-01")
 	if err != nil {
@@ -391,7 +391,7 @@ func TestGroupByPublishDateWithEmptyPages(t *testing.T) {
 }
 
 func TestGroupByExpiryDate(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	pages := preparePageGroupTestPages(t)
 	expect := PagesGroup{
 		{Key: "2012-04", Pages: Pages{pages[4], pages[2], pages[0]}},
@@ -409,7 +409,7 @@ func TestGroupByExpiryDate(t *testing.T) {
 }
 
 func TestGroupByParamDate(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	pages := preparePageGroupTestPages(t)
 	expect := PagesGroup{
 		{Key: "2012-04", Pages: Pages{pages[4], pages[2], pages[0]}},
@@ -427,7 +427,7 @@ func TestGroupByParamDate(t *testing.T) {
 }
 
 func TestGroupByParamDateInReverseOrder(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	pages := preparePageGroupTestPages(t)
 	expect := PagesGroup{
 		{Key: "2012-01", Pages: Pages{pages[1]}},
@@ -445,7 +445,7 @@ func TestGroupByParamDateInReverseOrder(t *testing.T) {
 }
 
 func TestGroupByParamDateWithEmptyPages(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	var pages Pages
 	groups, err := pages.GroupByParamDate("custom_date", "2006-01")
 	if err != nil {

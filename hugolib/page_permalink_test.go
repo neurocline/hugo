@@ -25,7 +25,7 @@ import (
 )
 
 func TestPermalink(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	tests := []struct {
 		file         string

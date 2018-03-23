@@ -24,7 +24,7 @@ import (
 )
 
 func TestDefaultSort(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	d1 := time.Now()
 	d2 := d1.Add(-1 * time.Hour)
 	d3 := d1.Add(-2 * time.Hour)
@@ -60,7 +60,7 @@ func TestDefaultSort(t *testing.T) {
 }
 
 func TestSortByN(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 	d1 := time.Now()
 	d2 := d1.Add(-2 * time.Hour)
@@ -93,7 +93,7 @@ func TestSortByN(t *testing.T) {
 }
 
 func TestLimit(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 	p := createSortTestPages(s, 10)
 	firstFive := p.Limit(5)
@@ -106,7 +106,7 @@ func TestLimit(t *testing.T) {
 }
 
 func TestPageSortReverse(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	s := newTestSite(t)
 	p1 := createSortTestPages(s, 10)
 	assert.Equal(t, 0, p1[0].fuzzyWordCount)
@@ -119,7 +119,7 @@ func TestPageSortReverse(t *testing.T) {
 }
 
 func TestPageSortByParam(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	var k interface{} = "arbitrarily.nested"
 	s := newTestSite(t)
 

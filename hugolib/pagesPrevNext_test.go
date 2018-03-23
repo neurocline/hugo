@@ -35,7 +35,7 @@ var pagePNTestSources = []pagePNTestObject{
 }
 
 func TestPrev(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	pages := preparePageGroupTestPages(t)
 	assert.Equal(t, pages.Prev(pages[0]), pages[4])
 	assert.Equal(t, pages.Prev(pages[1]), pages[0])
@@ -43,7 +43,7 @@ func TestPrev(t *testing.T) {
 }
 
 func TestNext(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	pages := preparePageGroupTestPages(t)
 	assert.Equal(t, pages.Next(pages[0]), pages[1])
 	assert.Equal(t, pages.Next(pages[1]), pages[2])
@@ -70,7 +70,7 @@ func prepareWeightedPagesPrevNext(t *testing.T) WeightedPages {
 }
 
 func TestWeightedPagesPrev(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	w := prepareWeightedPagesPrevNext(t)
 	assert.Equal(t, w.Prev(w[0].Page), w[4].Page)
 	assert.Equal(t, w.Prev(w[1].Page), w[0].Page)
@@ -78,7 +78,7 @@ func TestWeightedPagesPrev(t *testing.T) {
 }
 
 func TestWeightedPagesNext(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	w := prepareWeightedPagesPrevNext(t)
 	assert.Equal(t, w.Next(w[0].Page), w[1].Page)
 	assert.Equal(t, w.Next(w[1].Page), w[2].Page)

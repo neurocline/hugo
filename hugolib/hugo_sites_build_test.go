@@ -21,7 +21,7 @@ import (
 )
 
 func TestMultiSitesMainLangInRoot(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	for _, b := range []bool{false} {
 		doTestMultiSitesMainLangInRoot(t, b)
 	}
@@ -154,7 +154,7 @@ func doTestMultiSitesMainLangInRoot(t *testing.T, defaultInSubDir bool) {
 }
 
 func TestMultiSitesWithTwoLanguages(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	assert := require.New(t)
 	b := newTestSitesBuilder(t).WithConfigFile("toml", `
@@ -202,7 +202,7 @@ p1 = "p1en"
 
 //
 func TestMultiSitesBuild(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	for _, config := range []struct {
 		content string
@@ -635,7 +635,7 @@ func assertShouldNotBuild(t *testing.T, sites *HugoSites) {
 }
 
 func TestAddNewLanguage(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	assert := require.New(t)
 
 	b := newMultiSiteTestDefaultBuilder(t)
@@ -699,7 +699,7 @@ title = "Svenska"
 }
 
 func TestChangeDefaultLanguage(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	assert := require.New(t)
 
@@ -732,7 +732,7 @@ func TestChangeDefaultLanguage(t *testing.T) {
 }
 
 func TestTableOfContentsInShortcodes(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	b := newMultiSiteTestDefaultBuilder(t)
 

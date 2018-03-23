@@ -26,7 +26,7 @@ const robotTxtTemplate = `User-agent: Googlebot
 `
 
 func TestRobotsTXTOutput(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 
 	cfg := viper.New()
 	cfg.Set("baseURL", "http://auth/bub/")

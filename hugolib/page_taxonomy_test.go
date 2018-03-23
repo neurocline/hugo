@@ -57,7 +57,7 @@ categories = "d"
 TOML Front Matter with tags and categories`
 
 func TestParseTaxonomies(t *testing.T) {
-	t.Parallel()
+	t_Parallel(t)
 	for _, test := range []string{pageTomlWithTaxonomies,
 		pageJSONWithTaxonomies,
 		pageYamlWithTaxonomiesA,
