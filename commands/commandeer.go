@@ -129,6 +129,8 @@ func (c *commandeer) loadConfig(running bool) error {
 	c.configFiles = configFiles
 
 	for _, cmdV := range c.subCmdVs {
+		//config.BindPFlags(cmdV.Flags()) // bind all flags to viper - why not?
+		//config.BindPFlags(cmdV.PersistentFlags()) // bind all persistent flags to viper - why not?
 		c.initializeFlags(cmdV)
 	}
 

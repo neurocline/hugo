@@ -56,6 +56,7 @@ func LoadConfigDefault(fs afero.Fs) (*viper.Viper, error) {
 // a set of defaults.
 func LoadConfig(d ConfigSourceDescriptor) (*viper.Viper, []string, error) {
 	var configFiles []string
+	fmt.Printf("d: %+v\n", d)
 
 	fs := d.Fs
 	v := viper.New()
