@@ -334,7 +334,7 @@ func (t *textTemplates) addTemplateIn(tt *texttemplate.Template, name, tpl strin
 	}
 
 	if strings.Contains(name, "shortcodes") {
-		// We need to keep track of one ot the output format's shortcode template
+		// We need to keep track of one of the output format's shortcode template
 		// without knowing the rendering context.
 		withoutExt := strings.TrimSuffix(name, path.Ext(name))
 		clone := texttemplate.Must(templ.Clone())
@@ -411,8 +411,9 @@ func (t *templateHandler) loadTemplates(absPath string, prefix string) {
 			return nil
 		}
 
-		t.Log.DEBUG.Println("Template path", path)
+		// t.Log.DEBUG.Println("Template path", path)
 		if fi.Mode()&os.ModeSymlink == os.ModeSymlink {
+			t.Log.DEBUG.Println("Symlink path", path)
 			link, err := filepath.EvalSymlinks(absPath)
 			if err != nil {
 				t.Log.ERROR.Printf("Cannot read symbolic link '%s', error was: %s", absPath, err)
@@ -428,11 +429,16 @@ func (t *templateHandler) loadTemplates(absPath string, prefix string) {
 			if !linkfi.Mode().IsRegular() {
 				t.Log.ERROR.Printf("Symbolic links for directories not supported, skipping '%s'", absPath)
 			}
+
+			// Interesting - reading the code here, I'd expect something to be done
+			// at this point. No? Then why check for "is a file" and print error if not?
+
 			return nil
 		}
 
 		if !fi.IsDir() {
 			if isDotFile(path) || isBackupFile(path) || isBaseTemplate(path) {
+				t.Log.DEBUG.Println("Skipping file", path)
 				return nil
 			}
 
@@ -472,14 +478,27 @@ func (t *templateHandler) loadTemplates(absPath string, prefix string) {
 
 				return nil
 			}
+			//t.Log.TRACE.Printf("descriptor.TemplateDir=%#v, descriptor.LayoutDir=%#v, descriptor.RelPath=%#v, descriptor.Prefix=%#v, descriptor.ThemeDir=%#v\n",
+			//	descriptor.TemplateDir, descriptor.LayoutDir, descriptor.RelPath, descriptor.Prefix, descriptor.ThemeDir)
+			//t.Log.TRACE.Printf("tplID.Name=%#v, tplID.OverlayFilename=%#v, tplID.MasterFilename=%#v",
+			//	tplID.Name, tplID.OverlayFilename, tplID.MasterFilename)
 
 			if err := t.addTemplateFile(tplID.Name, tplID.MasterFilename, tplID.OverlayFilename); err != nil {
 				t.Log.ERROR.Printf("Failed to add template %q in path %q: %s", tplID.Name, path, err)
 			}
-
+			return nil
 		}
+
+		// It's a directory, so we'll iterate it in turn
+		if fi.IsDir() {
+			t.Log.DEBUG.Println("Checking template dir", path)
+		} else {
+			t.Log.DEBUG.Println("Unknown type", path)
+		}
+
 		return nil
 	}
+
 	if err := helpers.SymbolicWalk(t.Fs.Source, absPath, walker); err != nil {
 		t.Log.ERROR.Printf("Failed to load templates: %s", err)
 	}
@@ -527,6 +546,8 @@ func (t *templateHandler) getTemplateHandler(name string) templateLoader {
 }
 
 func (t *templateHandler) handleMaster(name, overlayFilename, masterFilename string, onMissing func(filename string) (string, error)) error {
+	t.Log.TRACE.Printf("handleMaster: file=%s, overlay=%s, master=%s",
+		name, overlayFilename, masterFilename)
 	h := t.getTemplateHandler(name)
 	return h.handleMaster(name, overlayFilename, masterFilename, onMissing)
 }
@@ -666,8 +687,8 @@ func (t *templateHandler) addTemplateFile(name, baseTemplatePath, path string) e
 		}
 
 		return t.addAceTemplate(name, baseTemplatePath, path, baseContent, innerContent)
-	default:
 
+	default:
 		if baseTemplatePath != "" {
 			return t.handleMaster(name, path, baseTemplatePath, getTemplate)
 		}
@@ -678,7 +699,7 @@ func (t *templateHandler) addTemplateFile(name, baseTemplatePath, path string) e
 			return err
 		}
 
-		t.Log.DEBUG.Printf("Add template file from path %s", path)
+		t.Log.DEBUG.Printf("Add template file from path %s (%d bytes)", path, len(templ))
 
 		return t.AddTemplate(name, templ)
 	}

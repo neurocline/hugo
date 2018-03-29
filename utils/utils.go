@@ -14,7 +14,10 @@
 package utils
 
 import (
+	"fmt"
+	"io"
 	"os"
+	"runtime"
 
 	jww "github.com/spf13/jwalterweatherman"
 )
@@ -56,4 +59,21 @@ func StopOnErr(logger *jww.Notepad, err error, s ...string) {
 			logger.CRITICAL.Println(message)
 		}
 	}
+}
+
+// PrintStack writes a stack trace to the given IO writer
+// TBD print stacks for all goroutines?
+
+var PrintStackEnabled = false
+func PrintStackEnable(b bool) {
+	PrintStackEnabled = b
+}
+
+func PrintStack(w io.Writer) {
+	if !PrintStackEnabled {
+		return
+	}
+	buf := make([]byte, 10000)
+	stackSize := runtime.Stack(buf, true)
+	fmt.Fprintf(w, "%s\n", string(buf[0:stackSize]))
 }
