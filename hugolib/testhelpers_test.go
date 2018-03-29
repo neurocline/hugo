@@ -522,16 +522,25 @@ func newTestSitesFromConfigWithDefaultTemplates(t testing.TB, tomlConfig string)
 	)
 }
 
-func newDebugLogger() *jww.Notepad {
-	return jww.NewNotepad(jww.LevelDebug, jww.LevelError, os.Stdout, ioutil.Discard, "", log.Ldate|log.Ltime)
+func newDebugLogger(term io.Writer) *jww.Notepad {
+	if term == nil {
+		term = os.Stdout
+	}
+	return jww.NewNotepad(jww.LevelDebug, jww.LevelError, term, ioutil.Discard, "", log.Ldate|log.Ltime)
 }
 
-func newErrorLogger() *jww.Notepad {
-	return jww.NewNotepad(jww.LevelError, jww.LevelError, os.Stdout, ioutil.Discard, "", log.Ldate|log.Ltime)
+func newErrorLogger(term io.Writer) *jww.Notepad {
+	if term == nil {
+		term = os.Stdout
+	}
+	return jww.NewNotepad(jww.LevelError, jww.LevelError, term, ioutil.Discard, "", log.Ldate|log.Ltime)
 }
 
-func newWarningLogger() *jww.Notepad {
-	return jww.NewNotepad(jww.LevelWarn, jww.LevelError, os.Stdout, ioutil.Discard, "", log.Ldate|log.Ltime)
+func newWarningLogger(term io.Writer) *jww.Notepad {
+	if term == nil {
+		term = os.Stdout
+	}
+	return jww.NewNotepad(jww.LevelWarn, jww.LevelError, term, ioutil.Discard, "", log.Ldate|log.Ltime)
 }
 
 func createWithTemplateFromNameValues(additionalTemplates ...string) func(templ tpl.TemplateHandler) error {

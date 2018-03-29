@@ -126,6 +126,12 @@ func (a aliasHandler) targetPathAlias(src string) (string, error) {
 		return "", fmt.Errorf("Alias \"%s\" resolves to website root directory", originalAlias)
 	}
 
+	// On Windows, absolute paths won't start with a filepath separator, but filepath knows.
+	// We should probably do this for all operating systems, not just windows
+	//if runtime.GOOS == "windows" && !a.allowRoot && filepath.IsAbs(alias) {
+	//	return "", fmt.Errorf("Alias \"%s\" resolves to website root directory", originalAlias)
+	//}
+
 	// Validate against directory traversal
 	if components[0] == ".." {
 		return "", fmt.Errorf("Alias \"%s\" traverses outside the website root directory", originalAlias)
@@ -137,6 +143,8 @@ func (a aliasHandler) targetPathAlias(src string) (string, error) {
 	msgs := []string{}
 	reservedNames := []string{"CON", "PRN", "AUX", "NUL", "COM0", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT0", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"}
 
+	// This fails if an absolute path is passed in; on Windows, only do the check against
+	// the portion of the path following filepath.VolumeName
 	if strings.ContainsAny(alias, ":*?\"<>|") {
 		msgs = append(msgs, fmt.Sprintf("Alias \"%s\" contains invalid characters on Windows: : * ? \" < > |", originalAlias))
 	}
