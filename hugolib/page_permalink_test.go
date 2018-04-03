@@ -78,7 +78,7 @@ Content
 
 		writeSource(t, fs, filepath.Join("content", filepath.FromSlash(test.file)), pageContent)
 
-		s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
+		s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
 		require.Len(t, s.RegularPages, 1)
 
 		p := s.RegularPages[0]

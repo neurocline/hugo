@@ -52,7 +52,7 @@ func TestShouldNotAddTrailingSlashToBaseURL(t *testing.T) {
 
 		cfg, fs := newTestCfg()
 		cfg.Set("baseURL", this.in)
-		d := deps.DepsCfg{Cfg: cfg, Fs: fs}
+		d := deps.HugoCfg{Cfg: cfg, Fs: fs}
 		s, err := NewSiteForCfg(d)
 		require.NoError(t, err)
 		s.initializeSiteInfo()
@@ -70,7 +70,7 @@ func TestPageCount(t *testing.T) {
 	cfg.Set("paginate", 10)
 
 	writeSourcesToSource(t, "", fs, urlFakeSource...)
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 
 	_, err := s.Fs.Destination.Open("public/blue")
 	if err != nil {
@@ -113,7 +113,7 @@ Do not go gentle into that good night.
 	writeSource(t, fs, filepath.Join("content", "sect1", "p1.md"), dt)
 	writeSource(t, fs, filepath.Join("content", "sect2", "p2.md"), dt)
 
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
 
 	assert.Len(s.RegularPages, 2)
 
@@ -171,7 +171,7 @@ Do not go gentle into that good night.
 	writeSource(t, fs, filepath.Join("layouts", "_default", "list.html"),
 		"<html><body>P{{.Paginator.PageNumber}}|URL: {{.Paginator.URL}}|{{ if .Paginator.HasNext }}Next: {{.Paginator.Next.URL }}{{ end }}</body></html>")
 
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 
 	assert.Len(s.RegularPages, 10)
 

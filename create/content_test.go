@@ -60,7 +60,7 @@ func TestNewContent(t *testing.T) {
 		cfg, fs := newTestCfg()
 		ps, err := helpers.NewPathSpec(fs, cfg)
 		require.NoError(t, err)
-		h, err := hugolib.NewHugoSites(deps.DepsCfg{Cfg: cfg, Fs: fs})
+		h, err := hugolib.NewHugoSites(deps.HugoCfg{Cfg: cfg, Fs: fs})
 		require.NoError(t, err)
 		require.NoError(t, initFs(fs))
 

@@ -206,7 +206,7 @@ Some content
 
 		this.setup(t)
 
-		buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+		buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 		t.Log(this.name)
 		this.assert(t)
 

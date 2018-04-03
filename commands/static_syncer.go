@@ -29,7 +29,7 @@ type staticSyncer struct {
 }
 
 func newStaticSyncer(c *commandeer) (*staticSyncer, error) {
-	dirs, err := src.NewDirs(c.Fs, c.Cfg, c.DepsCfg.Logger)
+	dirs, err := src.NewDirs(c.Fs, c.Cfg, c.HugoCfg.Logger)
 	if err != nil {
 		return nil, err
 	}

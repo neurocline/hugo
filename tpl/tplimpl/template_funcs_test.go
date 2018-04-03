@@ -43,10 +43,10 @@ var (
 	logger = jww.NewNotepad(jww.LevelFatal, jww.LevelFatal, os.Stdout, ioutil.Discard, "", log.Ldate|log.Ltime)
 )
 
-func newDepsConfig(cfg config.Provider) deps.DepsCfg {
+func newDepsConfig(cfg config.Provider) deps.HugoCfg {
 	l := helpers.NewLanguage("en", cfg)
 	l.Set("i18nDir", "i18n")
-	return deps.DepsCfg{
+	return deps.HugoCfg{
 		Language:            l,
 		Cfg:                 cfg,
 		Fs:                  hugofs.NewMem(l),

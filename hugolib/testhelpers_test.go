@@ -282,7 +282,7 @@ func (s *sitesBuilder) CreateSites() *sitesBuilder {
 		s.Cfg = cfg
 	}
 
-	sites, err := NewHugoSites(deps.DepsCfg{Fs: s.Fs, Cfg: s.Cfg, Running: s.running})
+	sites, err := NewHugoSites(deps.HugoCfg{Fs: s.Fs, Cfg: s.Cfg, Running: s.running})
 	if err != nil {
 		s.Fatalf("Failed to create sites: %s", err)
 	}
@@ -511,7 +511,7 @@ func newTestSite(t testing.TB, configKeyValues ...interface{}) *Site {
 		cfg.Set(configKeyValues[i].(string), configKeyValues[i+1])
 	}
 
-	d := deps.DepsCfg{Language: helpers.NewLanguage("en", cfg), Fs: fs, Cfg: cfg}
+	d := deps.HugoCfg{Language: helpers.NewLanguage("en", cfg), Fs: fs, Cfg: cfg}
 
 	s, err := NewSiteForCfg(d)
 
@@ -538,7 +538,7 @@ func newTestSitesFromConfig(t testing.TB, afs afero.Fs, tomlConfig string, layou
 		writeSource(t, fs, layoutPathContentPairs[i], layoutPathContentPairs[i+1])
 	}
 
-	h, err := NewHugoSites(deps.DepsCfg{Fs: fs, Cfg: cfg})
+	h, err := NewHugoSites(deps.HugoCfg{Fs: fs, Cfg: cfg})
 
 	require.NoError(t, err)
 
@@ -578,11 +578,11 @@ func createWithTemplateFromNameValues(additionalTemplates ...string) func(templ 
 	}
 }
 
-func buildSingleSite(t testing.TB, depsCfg deps.DepsCfg, buildCfg BuildCfg) *Site {
+func buildSingleSite(t testing.TB, depsCfg deps.HugoCfg, buildCfg BuildCfg) *Site {
 	return buildSingleSiteExpected(t, false, depsCfg, buildCfg)
 }
 
-func buildSingleSiteExpected(t testing.TB, expectBuildError bool, depsCfg deps.DepsCfg, buildCfg BuildCfg) *Site {
+func buildSingleSiteExpected(t testing.TB, expectBuildError bool, depsCfg deps.HugoCfg, buildCfg BuildCfg) *Site {
 	h, err := NewHugoSites(depsCfg)
 
 	require.NoError(t, err)

@@ -47,7 +47,7 @@ Content
 	writeSource(t, fs, filepath.Join("content", "page2.md"), fmt.Sprintf(pageTmpl, 2, "hugo, rocks", "2017-01-02"))
 	writeSource(t, fs, filepath.Join("content", "page3.md"), fmt.Sprintf(pageTmpl, 3, "bep, says", "2017-01-01"))
 
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
 	assert.Len(s.RegularPages, 3)
 
 	result, err := s.RegularPages.RelatedTo(types.NewKeyValuesStrings("keywords", "hugo", "rocks"))

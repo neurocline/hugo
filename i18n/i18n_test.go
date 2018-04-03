@@ -183,10 +183,10 @@ func doTestI18nTranslate(t *testing.T, test i18nTest, cfg config.Provider) strin
 
 }
 
-func newDepsConfig(tp *TranslationProvider, cfg config.Provider, fs *hugofs.Fs) deps.DepsCfg {
+func newDepsConfig(tp *TranslationProvider, cfg config.Provider, fs *hugofs.Fs) deps.HugoCfg {
 	l := helpers.NewLanguage("en", cfg)
 	l.Set("i18nDir", "i18n")
-	return deps.DepsCfg{
+	return deps.HugoCfg{
 		Language:            l,
 		Cfg:                 cfg,
 		Fs:                  fs,

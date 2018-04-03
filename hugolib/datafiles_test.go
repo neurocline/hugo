@@ -323,7 +323,7 @@ func doTestDataDirImpl(t *testing.T, dd dataDir, expected interface{}, configKey
 
 	var (
 		logger  = newErrorLogger()
-		depsCfg = deps.DepsCfg{Fs: fs, Cfg: cfg, Logger: logger}
+		depsCfg = deps.HugoCfg{Fs: fs, Cfg: cfg, Logger: logger}
 	)
 
 	writeSource(t, fs, filepath.Join("content", "dummy.md"), "content")
@@ -387,7 +387,7 @@ func TestDataFromShortcode(t *testing.T) {
 Slogan from shortcode: {{< d >}}
 `)
 
-	buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+	buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 
 	content := readSource(t, fs, "public/c/index.html")
 	require.True(t, strings.Contains(content, "Slogan from template: Hugo Rocks!"), content)

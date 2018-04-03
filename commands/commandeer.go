@@ -38,7 +38,7 @@ import (
 )
 
 type commandeer struct {
-	*deps.DepsCfg
+	*deps.HugoCfg
 
 	// This replaces the global Hugo *hugolib.HugoSites
 	sites *hugolib.HugoSites
@@ -89,7 +89,7 @@ func (c *commandeer) PathSpec() *helpers.PathSpec {
 }
 
 func (c *commandeer) initFs(fs *hugofs.Fs) error {
-	c.DepsCfg.Fs = fs
+	c.HugoCfg.Fs = fs
 	ps, err := helpers.NewPathSpec(fs, c.Cfg)
 	if err != nil {
 		return err
@@ -150,11 +150,11 @@ func newCommandeer(running bool, doWithCommandeer func(c *commandeer) error, sub
 
 func (c *commandeer) loadConfig(running bool) error {
 
-	if c.DepsCfg == nil {
-		c.DepsCfg = &deps.DepsCfg{}
+	if c.HugoCfg == nil {
+		c.HugoCfg = &deps.HugoCfg{}
 	}
 
-	cfg := c.DepsCfg
+	cfg := c.HugoCfg
 	c.configured = false
 	cfg.Running = running
 
@@ -166,8 +166,8 @@ func (c *commandeer) loadConfig(running bool) error {
 	}
 
 	var sourceFs afero.Fs = hugofs.Os
-	if c.DepsCfg.Fs != nil {
-		sourceFs = c.DepsCfg.Fs.Source
+	if c.HugoCfg.Fs != nil {
+		sourceFs = c.HugoCfg.Fs.Source
 	}
 
 	doWithConfig := func(cfg config.Provider) error {

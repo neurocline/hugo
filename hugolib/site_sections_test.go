@@ -113,7 +113,7 @@ PAG|{{ .Title }}|{{ $sect.InSection . }}
 
 	cfg.Set("paginate", 2)
 
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 
 	require.Len(t, s.RegularPages, 21)
 

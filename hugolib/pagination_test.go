@@ -275,7 +275,7 @@ func doTestPaginator(t *testing.T, useViper bool) {
 		cfg.Set("paginate", -1)
 	}
 
-	s, err := NewSiteForCfg(deps.DepsCfg{Cfg: cfg, Fs: fs})
+	s, err := NewSiteForCfg(deps.HugoCfg{Cfg: cfg, Fs: fs})
 	require.NoError(t, err)
 
 	pages := createTestPages(s, 12)
@@ -355,7 +355,7 @@ Pages: {{ .Paginator.TotalPages }}
 {{ end }}
 </body></html>`)
 
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 
 	th := testHelper{s.Cfg, s.Fs, t}
 
@@ -428,7 +428,7 @@ func TestPaginateWithNegativePaginate(t *testing.T) {
 	cfg, fs := newTestCfg()
 	cfg.Set("paginate", -1)
 
-	s, err := NewSiteForCfg(deps.DepsCfg{Cfg: cfg, Fs: fs})
+	s, err := NewSiteForCfg(deps.HugoCfg{Cfg: cfg, Fs: fs})
 	require.NoError(t, err)
 
 	n, _ := newPageOutput(s.newHomePage(), false, output.HTMLFormat)

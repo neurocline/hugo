@@ -41,7 +41,7 @@ func TestRSSOutput(t *testing.T) {
 		writeSource(t, fs, filepath.Join("content", "sect", src[0]), src[1])
 	}
 
-	buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+	buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 
 	// Home RSS
 	th.assertFileContent(filepath.Join("public", rssURI), "<?xml", "rss version", "RSSTest")

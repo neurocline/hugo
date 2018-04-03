@@ -90,7 +90,7 @@ func convertContents(mark rune) error {
 		return err
 	}
 
-	h, err := hugolib.NewHugoSites(*c.DepsCfg)
+	h, err := hugolib.NewHugoSites(*c.HugoCfg)
 	if err != nil {
 		return err
 	}

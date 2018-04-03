@@ -53,7 +53,7 @@ func TestRenderWithInvalidTemplate(t *testing.T) {
 
 	withTemplate := createWithTemplateFromNameValues("missing", templateMissingFunc)
 
-	buildSingleSiteExpected(t, true, deps.DepsCfg{Fs: fs, Cfg: cfg, WithTemplate: withTemplate}, BuildCfg{})
+	buildSingleSiteExpected(t, true, deps.HugoCfg{Fs: fs, Cfg: cfg, WithTemplate: withTemplate}, BuildCfg{})
 
 }
 
@@ -80,7 +80,7 @@ func TestDraftAndFutureRender(t *testing.T) {
 
 		}
 
-		return buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+		return buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 	}
 
 	// Testing Defaults.. Only draft:true and publishDate in the past should be rendered
@@ -131,7 +131,7 @@ func TestFutureExpirationRender(t *testing.T) {
 
 		}
 
-		return buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+		return buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 	}
 
 	s := siteSetup(t)
@@ -162,7 +162,7 @@ func TestLastChange(t *testing.T) {
 	writeSource(t, fs, filepath.Join("content", "sect/doc4.md"), "---\ntitle: doc4\nweight: 4\ndate: 2016-05-29\n---\n# doc4\n*some content*")
 	writeSource(t, fs, filepath.Join("content", "sect/doc5.md"), "---\ntitle: doc5\nweight: 3\n---\n# doc5\n*some content*")
 
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
 
 	require.False(t, s.Info.LastChange.IsZero(), "Site.LastChange is zero")
 	require.Equal(t, 2017, s.Info.LastChange.Year(), "Site.LastChange should be set to the page with latest Lastmod (year 2017)")
@@ -176,7 +176,7 @@ func TestPageWithUnderScoreIndexInFilename(t *testing.T) {
 
 	writeSource(t, fs, filepath.Join("content", "sect/my_index_file.md"), "---\ntitle: doc1\nweight: 1\ndate: 2014-05-29\n---\n# doc1\n*some content*")
 
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
 
 	require.Len(t, s.RegularPages, 1)
 
@@ -257,7 +257,7 @@ THE END.`, refShortcode),
 
 	s := buildSingleSite(
 		t,
-		deps.DepsCfg{
+		deps.HugoCfg{
 			Fs:           fs,
 			Cfg:          cfg,
 			WithTemplate: createWithTemplateFromNameValues("_default/single.html", "{{.Content}}")},
@@ -321,7 +321,7 @@ func doTestShouldAlwaysHaveUglyURLs(t *testing.T, uglyURLs bool) {
 	writeSource(t, fs, filepath.Join("layouts", "rss.xml"), "<root>RSS</root>")
 	writeSource(t, fs, filepath.Join("layouts", "sitemap.xml"), "<root>SITEMAP</root>")
 
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 
 	var expectedPagePath string
 	if uglyURLs {
@@ -373,7 +373,7 @@ func TestShouldNotWriteZeroLengthFilesToDestination(t *testing.T) {
 	writeSource(t, fs, filepath.Join("layouts", "_default/single.html"), "{{.Content}}")
 	writeSource(t, fs, filepath.Join("layouts", "_default/list.html"), "")
 
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 	th := testHelper{s.Cfg, s.Fs, t}
 
 	th.assertFileNotExist(filepath.Join("public", "index.html"))
@@ -425,7 +425,7 @@ func doTestSectionNaming(t *testing.T, canonify, uglify, pluralize bool) {
 	writeSource(t, fs, filepath.Join("layouts", "_default/single.html"), "{{.Content}}")
 	writeSource(t, fs, filepath.Join("layouts", "_default/list.html"), "{{.Title}}")
 
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 
 	mainSections, err := s.Info.Param("mainSections")
 	require.NoError(t, err)
@@ -487,7 +487,7 @@ func TestSkipRender(t *testing.T) {
 	writeSource(t, fs, filepath.Join("layouts", "head_abs"), "<head><script src=\"/script.js\"></script></head>")
 	writeSource(t, fs, filepath.Join("layouts", "shortcodes", "myshortcode.html"), "SHORT")
 
-	buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+	buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 
 	tests := []struct {
 		doc      string
@@ -540,7 +540,7 @@ func TestAbsURLify(t *testing.T) {
 
 			writeSource(t, fs, filepath.Join("layouts", "blue/single.html"), templateWithURLAbs)
 
-			s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+			s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 			th := testHelper{s.Cfg, s.Fs, t}
 
 			tests := []struct {
@@ -624,7 +624,7 @@ func TestOrderedPages(t *testing.T) {
 
 	}
 
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
 
 	if s.getPage(KindSection, "sect").Pages[1].title != "Three" || s.getPage(KindSection, "sect").Pages[2].title != "Four" {
 		t.Error("Pages in unexpected order.")
@@ -682,7 +682,7 @@ func TestGroupedPages(t *testing.T) {
 	cfg.Set("baseURL", "http://auth/bub")
 
 	writeSourcesToSource(t, "content", fs, groupedSources...)
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 
 	rbysection, err := s.RegularPages.GroupBy("Section", "desc")
 	if err != nil {
@@ -854,7 +854,7 @@ func TestWeightedTaxonomies(t *testing.T) {
 	cfg.Set("taxonomies", taxonomies)
 
 	writeSourcesToSource(t, "content", fs, sources...)
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 
 	if s.Taxonomies["tags"]["a"][0].Page.title != "foo" {
 		t.Errorf("Pages in unexpected order, 'foo' expected first, got '%v'", s.Taxonomies["tags"]["a"][0].Page.title)
@@ -900,7 +900,7 @@ func setupLinkingMockSite(t *testing.T) *Site {
 	cfg.Set("blackfriday",
 		map[string]interface{}{})
 	writeSourcesToSource(t, "content", fs, sources...)
-	return buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+	return buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 
 }
 

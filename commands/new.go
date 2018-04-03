@@ -113,7 +113,7 @@ func NewContent(cmd *cobra.Command, args []string) error {
 		kind = contentType
 	}
 
-	cfg := c.DepsCfg
+	cfg := c.HugoCfg
 
 	ps, err := helpers.NewPathSpec(cfg.Fs, cfg.Cfg)
 	if err != nil {
@@ -253,7 +253,7 @@ func NewTheme(cmd *cobra.Command, args []string) error {
 	createpath := c.PathSpec().AbsPathify(filepath.Join(c.Cfg.GetString("themesDir"), args[0]))
 	jww.INFO.Println("creating theme at", createpath)
 
-	cfg := c.DepsCfg
+	cfg := c.HugoCfg
 
 	if x, _ := helpers.Exists(createpath, cfg.Fs.Source); x {
 		return newUserError(createpath, "already exists")

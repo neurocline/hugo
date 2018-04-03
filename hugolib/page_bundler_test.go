@@ -75,7 +75,7 @@ func TestPageBundlerSiteRegular(t *testing.T) {
 
 				cfg.Set("uglyURLs", ugly)
 
-				s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+				s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 
 				th := testHelper{s.Cfg, s.Fs, t}
 
@@ -210,7 +210,7 @@ func TestPageBundlerSiteMultilingual(t *testing.T) {
 
 				assert.NoError(loadDefaultSettingsFor(cfg))
 				assert.NoError(loadLanguageSettings(cfg, nil))
-				sites, err := NewHugoSites(deps.DepsCfg{Fs: fs, Cfg: cfg})
+				sites, err := NewHugoSites(deps.HugoCfg{Fs: fs, Cfg: cfg})
 				assert.NoError(err)
 				assert.Equal(2, len(sites.Sites))
 
@@ -290,7 +290,7 @@ func TestMultilingualDisableLanguage(t *testing.T) {
 	assert.NoError(loadDefaultSettingsFor(cfg))
 	assert.NoError(loadLanguageSettings(cfg, nil))
 
-	sites, err := NewHugoSites(deps.DepsCfg{Fs: fs, Cfg: cfg})
+	sites, err := NewHugoSites(deps.HugoCfg{Fs: fs, Cfg: cfg})
 	assert.NoError(err)
 	assert.Equal(1, len(sites.Sites))
 
@@ -321,7 +321,7 @@ func TestPageBundlerSiteWitSymbolicLinksInContent(t *testing.T) {
 	cfg := ps.Cfg
 	fs := ps.Fs
 
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg, Logger: newErrorLogger()}, BuildCfg{})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg, Logger: newErrorLogger()}, BuildCfg{})
 
 	th := testHelper{s.Cfg, s.Fs, t}
 
@@ -381,7 +381,7 @@ HEADLESS {{< myShort >}}
 	writeSource(t, fs, filepath.Join(workDir, "base", "b", "l2.png"), "PNG image")
 	writeSource(t, fs, filepath.Join(workDir, "base", "b", "p1.md"), pageContent)
 
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 
 	assert.Equal(1, len(s.RegularPages))
 	assert.Equal(1, len(s.headlessPages))

@@ -38,7 +38,7 @@ func TestByCountOrderOfTaxonomies(t *testing.T) {
 
 	writeSource(t, fs, filepath.Join("content", "page.md"), pageYamlWithTaxonomiesA)
 
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 
 	st := make([]string, 0)
 	for _, t := range s.Taxonomies["tags"].ByCount() {

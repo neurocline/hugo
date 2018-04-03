@@ -44,7 +44,7 @@ func pageFromString(in, filename string, withTemplate ...func(templ tpl.Template
 		var err error
 		cfg, fs := newTestCfg()
 
-		d := deps.DepsCfg{Language: helpers.NewLanguage("en", cfg), Cfg: cfg, Fs: fs, WithTemplate: withTemplate[0]}
+		d := deps.HugoCfg{Language: helpers.NewLanguage("en", cfg), Cfg: cfg, Fs: fs, WithTemplate: withTemplate[0]}
 
 		s, err = NewSiteForCfg(d)
 		if err != nil {
@@ -70,7 +70,7 @@ title: "Title"
 
 	writeSource(t, fs, "content/simple.md", contentFile)
 
-	h, err := NewHugoSites(deps.DepsCfg{Fs: fs, Cfg: cfg, WithTemplate: withTemplate})
+	h, err := NewHugoSites(deps.HugoCfg{Fs: fs, Cfg: cfg, WithTemplate: withTemplate})
 
 	require.NoError(t, err)
 	require.Len(t, h.Sites, 1)
@@ -580,7 +580,7 @@ tags:
 
 	writeSourcesToSource(t, "content", fs, sources...)
 
-	s := buildSingleSite(t, deps.DepsCfg{WithTemplate: addTemplates, Fs: fs, Cfg: cfg}, BuildCfg{})
+	s := buildSingleSite(t, deps.HugoCfg{WithTemplate: addTemplates, Fs: fs, Cfg: cfg}, BuildCfg{})
 	th := testHelper{s.Cfg, s.Fs, t}
 
 	for _, test := range tests {

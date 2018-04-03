@@ -101,7 +101,7 @@ func (h *HugoSites) GetContentPage(filename string) *Page {
 
 // NewHugoSites creates a new collection of sites given the input sites, building
 // a language configuration based on those.
-func newHugoSites(cfg deps.DepsCfg, sites ...*Site) (*HugoSites, error) {
+func newHugoSites(cfg deps.HugoCfg, sites ...*Site) (*HugoSites, error) {
 
 	if cfg.Language != nil {
 		return nil, errors.New("Cannot provide Language in Cfg when sites are provided")
@@ -157,7 +157,7 @@ func (h *HugoSites) initGitInfo() error {
 	return nil
 }
 
-func applyDepsIfNeeded(cfg deps.DepsCfg, sites ...*Site) error {
+func applyDepsIfNeeded(cfg deps.HugoCfg, sites ...*Site) error {
 	if cfg.TemplateProvider == nil {
 		cfg.TemplateProvider = tplimpl.DefaultTemplateProvider
 	}
@@ -213,7 +213,7 @@ func applyDepsIfNeeded(cfg deps.DepsCfg, sites ...*Site) error {
 }
 
 // NewHugoSites creates HugoSites from the given config.
-func NewHugoSites(cfg deps.DepsCfg) (*HugoSites, error) {
+func NewHugoSites(cfg deps.HugoCfg) (*HugoSites, error) {
 	sites, err := createSitesFromConfig(cfg)
 	if err != nil {
 		return nil, err
@@ -241,7 +241,7 @@ func (s *Site) withSiteTemplates(withTemplates ...func(templ tpl.TemplateHandler
 	}
 }
 
-func createSitesFromConfig(cfg deps.DepsCfg) ([]*Site, error) {
+func createSitesFromConfig(cfg deps.HugoCfg) ([]*Site, error) {
 
 	var (
 		sites []*Site
@@ -282,7 +282,7 @@ func (h *HugoSites) createSitesFromConfig() error {
 		return err
 	}
 
-	depsCfg := deps.DepsCfg{Fs: h.Fs, Cfg: h.Cfg}
+	depsCfg := deps.HugoCfg{Fs: h.Fs, Cfg: h.Cfg}
 
 	sites, err := createSitesFromConfig(depsCfg)
 

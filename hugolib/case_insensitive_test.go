@@ -179,7 +179,7 @@ Site Colors: {{ .Site.Params.COLOR }}|{{ .Site.Params.COLORS.YELLOW }}
 {{ partial "partial.html" . }}
 `)
 
-	sites, err := NewHugoSites(deps.DepsCfg{Fs: fs, Cfg: cfg})
+	sites, err := NewHugoSites(deps.HugoCfg{Fs: fs, Cfg: cfg})
 
 	if err != nil {
 		t.Fatalf("Failed to create sites: %s", err)
@@ -284,7 +284,7 @@ p
 
 	writeSource(t, fs, filepath.Join("layouts", "_default", fmt.Sprintf("single.%s", suffix)), templ)
 
-	sites, err := NewHugoSites(deps.DepsCfg{Fs: fs, Cfg: cfg})
+	sites, err := NewHugoSites(deps.HugoCfg{Fs: fs, Cfg: cfg})
 
 	if err != nil {
 		t.Fatalf("Failed to create sites: %s", err)

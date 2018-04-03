@@ -52,7 +52,7 @@ var listDraftsCmd = &cobra.Command{
 			return err
 		}
 
-		sites, err := hugolib.NewHugoSites(*c.DepsCfg)
+		sites, err := hugolib.NewHugoSites(*c.HugoCfg)
 
 		if err != nil {
 			return newSystemError("Error creating sites", err)
@@ -89,7 +89,7 @@ posted in the future.`,
 			return err
 		}
 
-		sites, err := hugolib.NewHugoSites(*c.DepsCfg)
+		sites, err := hugolib.NewHugoSites(*c.HugoCfg)
 
 		if err != nil {
 			return newSystemError("Error creating sites", err)
@@ -126,7 +126,7 @@ expired.`,
 			return err
 		}
 
-		sites, err := hugolib.NewHugoSites(*c.DepsCfg)
+		sites, err := hugolib.NewHugoSites(*c.HugoCfg)
 
 		if err != nil {
 			return newSystemError("Error creating sites", err)

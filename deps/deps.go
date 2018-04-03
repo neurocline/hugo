@@ -88,7 +88,7 @@ func (d *Deps) LoadResources() error {
 // New initializes a Dep struct.
 // Defaults are set for nil values,
 // but TemplateProvider, TranslationProvider and Language are always required.
-func New(cfg DepsCfg) (*Deps, error) {
+func New(cfg HugoCfg) (*Deps, error) {
 	var (
 		logger = cfg.Logger
 		fs     = cfg.Fs
@@ -178,10 +178,10 @@ func (d Deps) ForLanguage(l *helpers.Language) (*Deps, error) {
 
 }
 
-// DepsCfg contains configuration options that can be used to configure Hugo
+// HugoCfg contains configuration options that can be used to configure Hugo
 // on a global level, i.e. logging etc.
 // Nil values will be given default values.
-type DepsCfg struct {
+type HugoCfg struct {
 
 	// The Logger to use.
 	Logger *jww.Notepad

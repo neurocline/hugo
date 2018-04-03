@@ -45,7 +45,7 @@ func BenchmarkGetPage(b *testing.B) {
 		}
 	}
 
-	s := buildSingleSite(b, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
+	s := buildSingleSite(b, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
 
 	pagePaths := make([]string, b.N)
 
@@ -81,7 +81,7 @@ func BenchmarkGetPageRegular(b *testing.B) {
 		}
 	}
 
-	s := buildSingleSite(b, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
+	s := buildSingleSite(b, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
 
 	pagePaths := make([]string, b.N)
 
@@ -113,7 +113,7 @@ func TestGetPage(t *testing.T) {
 	content := fmt.Sprintf(pageCollectionsPageTemplate, "UniqueBase")
 	writeSource(t, fs, filepath.Join("content", "sect3", "unique.md"), content)
 
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
 
 	tests := []struct {
 		kind          string

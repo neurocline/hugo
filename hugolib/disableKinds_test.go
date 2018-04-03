@@ -107,7 +107,7 @@ categories:
 	writeNewContentFile(t, fs.Source, "Category Terms", "2017-01-01", "content/categories/_index.md", 10)
 	writeNewContentFile(t, fs.Source, "Tag1 List", "2017-01-01", "content/tags/tag1/_index.md", 10)
 
-	h, err := NewHugoSites(deps.DepsCfg{Fs: fs, Cfg: cfg})
+	h, err := NewHugoSites(deps.HugoCfg{Fs: fs, Cfg: cfg})
 
 	require.NoError(t, err)
 	require.Len(t, h.Sites, 1)

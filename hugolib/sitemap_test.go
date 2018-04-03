@@ -47,7 +47,7 @@ func doTestSitemapOutput(t *testing.T, internal bool) {
 	cfg, fs := newTestCfg()
 	cfg.Set("baseURL", "http://auth/bub/")
 
-	depsCfg := deps.DepsCfg{Fs: fs, Cfg: cfg}
+	depsCfg := deps.HugoCfg{Fs: fs, Cfg: cfg}
 
 	depsCfg.WithTemplate = func(templ tpl.TemplateHandler) error {
 		if !internal {

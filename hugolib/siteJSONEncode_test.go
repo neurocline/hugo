@@ -37,7 +37,7 @@ Summary text
 <!--more-->
 `)
 
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 
 	_, err := json.Marshal(s)
 	check(t, err)

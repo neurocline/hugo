@@ -65,7 +65,7 @@ func doTestShortcodeCrossrefs(t *testing.T, relative bool) {
 
 	expected := fmt.Sprintf(`%s/simple/url/`, expectedBase)
 
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 
 	require.Len(t, s.RegularPages, 1)
 
@@ -108,7 +108,7 @@ title: Shorty
 %s`, this.in))
 		writeSource(t, fs, filepath.Join("layouts", "_default", "single.html"), `{{ .Content }}`)
 
-		buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+		buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 
 		th.assertFileContentRegexp(filepath.Join("public", "simple", "index.html"), this.expected)
 
@@ -153,7 +153,7 @@ title: Shorty
 %s`, this.in))
 		writeSource(t, fs, filepath.Join("layouts", "_default", "single.html"), `{{ .Content }}`)
 
-		buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+		buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 
 		th.assertFileContentRegexp(filepath.Join("public", "simple", "index.html"), this.expected)
 
@@ -183,7 +183,7 @@ title: Shorty
 %s`, this.in))
 		writeSource(t, fs, filepath.Join("layouts", "_default", "single.html"), `{{ .Content }}`)
 
-		buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+		buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 
 		th.assertFileContentRegexp(filepath.Join("public", "simple", "index.html"), this.expected)
 	}
@@ -221,7 +221,7 @@ title: Shorty
 %s`, this.in))
 		writeSource(t, fs, filepath.Join("layouts", "_default", "single.html"), `{{ .Content }}`)
 
-		buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+		buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 
 		th.assertFileContentRegexp(filepath.Join("public", "simple", "index.html"), this.expected)
 	}
@@ -260,7 +260,7 @@ title: Shorty
 %s`, this.in))
 		writeSource(t, fs, filepath.Join("layouts", "_default", "single.html"), `{{ .Content }}`)
 
-		buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+		buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 
 		th.assertFileContentRegexp(filepath.Join("public", "simple", "index.html"), this.expected)
 
@@ -293,7 +293,7 @@ title: Shorty
 %s`, this.in))
 		writeSource(t, fs, filepath.Join("layouts", "_default", "single.html"), `{{ .Content }}`)
 
-		buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+		buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 
 		th.assertFileContentRegexp(filepath.Join("public", "simple", "index.html"), this.expected)
 
@@ -341,7 +341,7 @@ title: Shorty
 %s`, this.in))
 		writeSource(t, fs, filepath.Join("layouts", "_default", "single.html"), `{{ .Content }}`)
 
-		buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg, WithTemplate: withTemplate}, BuildCfg{})
+		buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg, WithTemplate: withTemplate}, BuildCfg{})
 
 		th.assertFileContentRegexp(filepath.Join("public", "simple", "index.html"), this.expected)
 
@@ -396,7 +396,7 @@ title: Shorty
 %s`, this.in))
 		writeSource(t, fs, filepath.Join("layouts", "_default", "single.html"), `{{ .Content | safeHTML }}`)
 
-		buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg, WithTemplate: withTemplate}, BuildCfg{})
+		buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg, WithTemplate: withTemplate}, BuildCfg{})
 
 		th.assertFileContentRegexp(filepath.Join("public", "simple", "index.html"), this.expected)
 

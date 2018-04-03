@@ -526,14 +526,14 @@ func (c *commandeer) createStaticDirsConfig() ([]*src.Dirs, error) {
 	var dirsConfig []*src.Dirs
 
 	if !c.languages.IsMultihost() {
-		dirs, err := src.NewDirs(c.Fs, c.Cfg, c.DepsCfg.Logger)
+		dirs, err := src.NewDirs(c.Fs, c.Cfg, c.HugoCfg.Logger)
 		if err != nil {
 			return nil, err
 		}
 		dirsConfig = append(dirsConfig, dirs)
 	} else {
 		for _, l := range c.languages {
-			dirs, err := src.NewDirs(c.Fs, l, c.DepsCfg.Logger)
+			dirs, err := src.NewDirs(c.Fs, l, c.HugoCfg.Logger)
 			if err != nil {
 				return nil, err
 			}
@@ -815,7 +815,7 @@ func (c *commandeer) initSites() error {
 		c.sites.Log.ResetLogCounters()
 		return nil
 	}
-	h, err := hugolib.NewHugoSites(*c.DepsCfg)
+	h, err := hugolib.NewHugoSites(*c.HugoCfg)
 
 	if err != nil {
 		return err

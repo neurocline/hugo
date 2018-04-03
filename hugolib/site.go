@@ -190,7 +190,7 @@ func (s *Site) reset() *Site {
 }
 
 // newSite creates a new site with the given configuration.
-func newSite(cfg deps.DepsCfg) (*Site, error) {
+func newSite(cfg deps.HugoCfg) (*Site, error) {
 	c := newPageCollections()
 
 	if cfg.Language == nil {
@@ -280,7 +280,7 @@ func newSite(cfg deps.DepsCfg) (*Site, error) {
 // NewSite creates a new site with the given dependency configuration.
 // The site will have a template system loaded and ready to use.
 // Note: This is mainly used in single site tests.
-func NewSite(cfg deps.DepsCfg) (*Site, error) {
+func NewSite(cfg deps.HugoCfg) (*Site, error) {
 	s, err := newSite(cfg)
 	if err != nil {
 		return nil, err
@@ -328,7 +328,7 @@ func newSiteForLang(lang *helpers.Language, withTemplate ...func(templ tpl.Templ
 		return nil
 	}
 
-	cfg := deps.DepsCfg{WithTemplate: withTemplates, Language: lang, Cfg: lang}
+	cfg := deps.HugoCfg{WithTemplate: withTemplates, Language: lang, Cfg: lang}
 
 	return NewSiteForCfg(cfg)
 
@@ -337,7 +337,7 @@ func newSiteForLang(lang *helpers.Language, withTemplate ...func(templ tpl.Templ
 // NewSiteForCfg creates a new site for the given configuration.
 // The site will have a template system loaded and ready to use.
 // Note: This is mainly used in single site tests.
-func NewSiteForCfg(cfg deps.DepsCfg) (*Site, error) {
+func NewSiteForCfg(cfg deps.HugoCfg) (*Site, error) {
 	s, err := newSite(cfg)
 
 	if err != nil {

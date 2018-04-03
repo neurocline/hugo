@@ -606,7 +606,7 @@ func testAllMarkdownEnginesForPages(t *testing.T,
 		homePath := fmt.Sprintf("_index.%s", e.ext)
 		writeSource(t, fs, filepath.Join(contentDir, homePath), homePage)
 
-		s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
+		s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
 
 		require.Len(t, s.RegularPages, len(pageSources))
 
@@ -716,7 +716,7 @@ func TestPageWithDelimiterForMarkdownThatCrossesBorder(t *testing.T) {
 
 	writeSource(t, fs, filepath.Join("content", "simple.md"), simplePageWithSummaryDelimiterAndMarkdownThatCrossesBorder)
 
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
 
 	require.Len(t, s.RegularPages, 1)
 
@@ -780,7 +780,7 @@ title: Raw
 
 	writeSource(t, fs, filepath.Join("layouts", "_default", "single.html"), `{{ .RawContent }}`)
 
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
 
 	require.Len(t, s.RegularPages, 1)
 	p := s.RegularPages[0]
@@ -822,7 +822,7 @@ func TestPageWithAdditionalExtension(t *testing.T) {
 
 	writeSource(t, fs, filepath.Join("content", "simple.md"), simplePageWithAdditionalExtension)
 
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
 
 	require.Len(t, s.RegularPages, 1)
 
@@ -837,7 +837,7 @@ func TestTableOfContents(t *testing.T) {
 
 	writeSource(t, fs, filepath.Join("content", "tocpage.md"), pageWithToC)
 
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
 
 	require.Len(t, s.RegularPages, 1)
 
@@ -900,7 +900,7 @@ func TestPageWithDate(t *testing.T) {
 
 	writeSource(t, fs, filepath.Join("content", "simple.md"), simplePageRFC3339Date)
 
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
 
 	require.Len(t, s.RegularPages, 1)
 
@@ -930,7 +930,7 @@ func TestPageWithLastmodFromGitInfo(t *testing.T) {
 	assrt.NoError(err)
 	cfg.Set("workingDir", filepath.Join(wd, "testsite"))
 
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
 
 	assrt.Len(s.RegularPages, 1)
 
@@ -971,7 +971,7 @@ Content
 			c2fi, err := fs.Source.Stat(c2)
 			assrt.NoError(err)
 
-			s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
+			s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
 
 			assrt.Len(s.RegularPages, 2)
 
@@ -1328,7 +1328,7 @@ func TestPagePaths(t *testing.T) {
 
 		writeSource(t, fs, filepath.Join("content", filepath.FromSlash(test.path)), test.content)
 
-		s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
+		s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
 		require.Len(t, s.RegularPages, 1)
 
 	}
@@ -1557,7 +1557,7 @@ func TestTranslationKey(t *testing.T) {
 	writeSource(t, fs, filepath.Join("content", filepath.FromSlash("sect/simple.no.md")), "---\ntitle: \"A1\"\ntranslationKey: \"k1\"\n---\nContent\n")
 	writeSource(t, fs, filepath.Join("content", filepath.FromSlash("sect/simple.en.md")), "---\ntitle: \"A2\"\n---\nContent\n")
 
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
 
 	require.Len(t, s.RegularPages, 2)
 
@@ -1579,7 +1579,7 @@ func TestChompBOM(t *testing.T) {
 
 	writeSource(t, fs, filepath.Join("content", "simple.md"), utf8BOM+simplePage)
 
-	s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
+	s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{SkipRender: true})
 
 	require.Len(t, s.RegularPages, 1)
 
@@ -1689,7 +1689,7 @@ tags:
 # doc1
 *some blog content*`))
 
-				s := buildSingleSite(t, deps.DepsCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
+				s := buildSingleSite(t, deps.HugoCfg{Fs: fs, Cfg: cfg}, BuildCfg{})
 
 				require.Len(t, s.RegularPages, 4)
 
