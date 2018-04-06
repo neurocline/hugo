@@ -40,6 +40,9 @@ import (
 type commandeer struct {
 	*deps.DepsCfg
 
+	// This replaces the global Hugo *hugolib.HugoSites
+	sites *hugolib.HugoSites
+
 	subCmdVs []*cobra.Command
 
 	pathSpec    *helpers.PathSpec

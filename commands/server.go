@@ -226,7 +226,7 @@ func server(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	for _, s := range Hugo.Sites {
+	for _, s := range c.sites.Sites {
 		s.RegisterMediaTypes()
 	}
 
@@ -337,7 +337,7 @@ func (f *fileServer) createEndpoint(i int) (*http.ServeMux, string, string, erro
 
 func (c *commandeer) serve() error {
 
-	isMultiHost := Hugo.IsMultihost()
+	isMultiHost := c.sites.IsMultihost()
 
 	var (
 		baseURLs []string
@@ -345,12 +345,12 @@ func (c *commandeer) serve() error {
 	)
 
 	if isMultiHost {
-		for _, s := range Hugo.Sites {
+		for _, s := range c.sites.Sites {
 			baseURLs = append(baseURLs, s.BaseURL.String())
 			roots = append(roots, s.Language.Lang)
 		}
 	} else {
-		s := Hugo.Sites[0]
+		s := c.sites.Sites[0]
 		baseURLs = []string{s.BaseURL.String()}
 		roots = []string{""}
 	}
@@ -362,7 +362,7 @@ func (c *commandeer) serve() error {
 	}
 
 	c.enableAbort()
-	Hugo.Abort = c.abort
+	c.sites.Abort = c.abort
 
 	doLiveReload := !c.Cfg.GetBool("disableLiveReload")
 	if doLiveReload {
