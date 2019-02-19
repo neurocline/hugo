@@ -166,7 +166,10 @@ func (c *commandeer) createLogger(cfg config.Provider, running bool) (*loggers.L
 	loggers.InitGlobalLogger(stdoutThreshold, logThreshold, outHandle, logHandle)
 	helpers.InitLoggers()
 
-	return loggers.NewLogger(stdoutThreshold, logThreshold, outHandle, logHandle, running), nil
+	// Create the loggers, and if we have --quiet, turn off threshold loggers
+	newLogger := loggers.NewLogger(stdoutThreshold, logThreshold, outHandle, logHandle, running)
+	newLogger.SetQuiet(c.h.quiet)
+	return newLogger, nil
 }
 
 func initializeFlags(cmd *cobra.Command, cfg config.Provider) {

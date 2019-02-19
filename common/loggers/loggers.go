@@ -60,6 +60,11 @@ func (l *Logger) Reset() {
 	}
 }
 
+func (l *Logger) SetQuiet(quiet bool) {
+	jww.EnableDisableFeedback(!quiet)
+	l.EnableDisableFeedback(!quiet)
+}
+
 //  NewLogger creates a new Logger for the given thresholds
 func NewLogger(stdoutThreshold, logThreshold jww.Threshold, outHandle, logHandle io.Writer, saveErrors bool) *Logger {
 	return newLogger(stdoutThreshold, logThreshold, outHandle, logHandle, saveErrors)

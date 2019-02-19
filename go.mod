@@ -62,3 +62,5 @@ require (
 exclude github.com/chaseadamsio/goorgeous v2.0.0+incompatible
 
 replace github.com/markbates/inflect => github.com/markbates/inflect v0.0.0-20171215194931-a12c3aec81a6
+
+replace github.com/spf13/jwalterweatherman => github.com/neurocline/jwalterweatherman v1.0.1-0.20190219213658-325f63e91740
