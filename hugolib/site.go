@@ -1747,6 +1747,23 @@ func (s *Site) renderForLayouts(name string, d interface{}, w io.Writer, layouts
 
 	templ = s.findFirstTemplate(layouts...)
 	if templ == nil {
+		// If we don't have verbose output, show a much friendlier version of the output; drop the possible
+		// layout locations, and show a single output per missing layout
+		if !s.Cfg.GetBool("verbose") {
+			var coremsg, extramsg string
+			coremsg = fmt.Sprintf("No layout for type=%q lang=%q", name, s.Language.Lang)
+			if p, ok := d.(*PageOutput); ok {
+				extramsg = fmt.Sprintf(" output format=%q", p.outputFormat.Name)
+			}
+			if infoOnMissingLayout[name] {
+				s.Log.INFO.Printf("%s%s\n", coremsg, extramsg)
+			} else {
+				helpers.DistinctWarnLog.Printf("%s%s", coremsg, extramsg)
+			}
+			return nil
+		}
+
+		// Show verbose output for missing layout
 		log := s.Log.WARN
 		if infoOnMissingLayout[name] {
 			log = s.Log.INFO
