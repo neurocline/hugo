@@ -22,6 +22,8 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/gohugoio/hugo/output"
+
+	jww "github.com/spf13/jwalterweatherman"
 )
 
 // renderPages renders pages each corresponding to a markdown file.
@@ -164,7 +166,12 @@ func pageRenderer(s *Site, pages <-chan *Page, results chan<- error, wg *sync.Wa
 					continue
 				}
 
-				s.Log.DEBUG.Printf("Render %s to %q with layouts %q", pageOutput.Kind, targetPath, layouts)
+				// Show simpler version if non-debug output
+				if s.Log.GetStdoutThreshold() > jww.LevelDebug {
+					s.Log.INFO.Printf("Render type=%q lang=%q format=%q to %q\n", pageOutput.Kind, s.Language.Lang, pageOutput.outputFormat.Name, targetPath)
+				} else {
+					s.Log.DEBUG.Printf("Render %s to %q with layouts %q", pageOutput.Kind, targetPath, layouts)
+				}
 
 				if err := s.renderAndWritePage(&s.PathSpec.ProcessingStats.Pages, "page "+pageOutput.FullFilePath(), targetPath, pageOutput, layouts...); err != nil {
 					results <- err
