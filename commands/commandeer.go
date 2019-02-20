@@ -237,6 +237,11 @@ func (c *commandeer) loadConfig(mustHaveConfigFile, running bool) error {
 	c.configured = false
 	cfg.Running = running
 
+	// Courtesy set verbose flag from verboseVal string
+	if c.h.verboseVal != "" {
+		c.h.verbose = true
+	}
+
 	var dir string
 	if c.h.source != "" {
 		dir, _ = filepath.Abs(c.h.source)
@@ -250,6 +255,7 @@ func (c *commandeer) loadConfig(mustHaveConfigFile, running bool) error {
 	}
 
 	environment := c.h.getEnvironment(running)
+	verbose := c.h.verbose
 
 	doWithConfig := func(cfg config.Provider) error {
 
@@ -259,6 +265,9 @@ func (c *commandeer) loadConfig(mustHaveConfigFile, running bool) error {
 
 		cfg.Set("workingDir", dir)
 		cfg.Set("environment", environment)
+
+		// "verbose" is no longer a command-line flag, but we have a boolean to use
+		cfg.Set("verbose", verbose)
 		return nil
 	}
 

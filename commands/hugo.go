@@ -126,6 +126,8 @@ func initializeConfig(mustHaveConfigFile, running bool,
 
 }
 
+// createLogger creates console and file loggers, respecting command-line options
+// and vars. The --quiet option overrides --verbose for 
 func (c *commandeer) createLogger(cfg config.Provider, running bool) (*loggers.Logger, error) {
 	var (
 		logHandle       = ioutil.Discard
@@ -156,11 +158,35 @@ func (c *commandeer) createLogger(cfg config.Provider, running bool) (*loggers.L
 		stdoutThreshold = jww.LevelDebug
 	}
 
+	// If --verbose=<leveL> and no --quiet, then update console output level
+	// (this overrides previous discrete settings)
+	if !c.h.quiet {
+		switch c.h.verboseVal {
+		case "trace":
+			stdoutThreshold = jww.LevelTrace
+		case "debug":
+			stdoutThreshold = jww.LevelDebug
+		case "info":
+			stdoutThreshold = jww.LevelInfo
+		case "warn":
+			stdoutThreshold = jww.LevelWarn
+		}
+	}
+
+	// If --quiet, then make sure console is ERROR level
+	if c.h.quiet {
+		stdoutThreshold = jww.LevelError
+	}
+
 	if c.h.verboseLog {
 		logThreshold = jww.LevelInfo
 		if cfg.GetBool("debug") {
 			logThreshold = jww.LevelDebug
 		}
+	}
+
+	if stdoutThreshold <= jww.LevelDebug {
+		fmt.Printf("stdoutThreshold=%v logThreshold=%v\n", stdoutThreshold, logThreshold)
 	}
 
 	loggers.InitGlobalLogger(stdoutThreshold, logThreshold, outHandle, logHandle)
@@ -238,7 +264,6 @@ func initializeFlags(cmd *cobra.Command, cfg config.Provider) {
 	// Set some "config aliases"
 	setValueFromFlag(cmd.Flags(), "destination", cfg, "publishDir", false)
 	setValueFromFlag(cmd.Flags(), "i18n-warnings", cfg, "logI18nWarnings", false)
-
 }
 
 func setValueFromFlag(flags *flag.FlagSet, key string, cfg config.Provider, targetKey string, force bool) {
