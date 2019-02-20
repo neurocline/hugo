@@ -1812,15 +1812,6 @@ func (s *Site) publish(statCounter *uint64, path string, r io.Reader) (err error
 	return helpers.WriteToDisk(filepath.Clean(path), r, s.BaseFs.PublishFs)
 }
 
-func getGoMaxProcs() int {
-	if gmp := os.Getenv("GOMAXPROCS"); gmp != "" {
-		if p, err := strconv.Atoi(gmp); err != nil {
-			return p
-		}
-	}
-	return 1
-}
-
 func (s *Site) newNodePage(typ string, sections ...string) *Page {
 	p := &Page{
 		language:        s.Language,

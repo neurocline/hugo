@@ -243,6 +243,7 @@ func initializeFlags(cmd *cobra.Command, cfg config.Provider) {
 		"themesDir",
 		"verbose",
 		"verboseLog",
+		"workers",
 	}
 
 	// Will set a value even if it is the default.
@@ -279,6 +280,9 @@ func setValueFromFlag(flags *flag.FlagSet, key string, cfg config.Provider, targ
 		case "bool":
 			bv, _ := flags.GetBool(key)
 			cfg.Set(configKey, bv)
+		case "int":
+			iv, _ := flags.GetInt(key)
+			cfg.Set(configKey, iv)
 		case "string":
 			cfg.Set(configKey, f.Value.String())
 		case "stringSlice":

@@ -177,6 +177,7 @@ Complete documentation is available at http://gohugo.io/.`,
 	cc.cmd.PersistentFlags().BoolVar(&cc.verboseLog, "verboseLog", false, "verbose logging")
 
 	cc.cmd.Flags().BoolVarP(&cc.buildWatch, "watch", "w", false, "watch filesystem for changes and recreate as needed")
+	cc.cmd.Flags().IntVar(&cc.numWorkers, "workers", 0, "number of page workers")
 
 	cc.cmd.Flags().Bool("renderToMemory", false, "render to memory (only useful for benchmark testing)")
 
@@ -195,6 +196,7 @@ type hugoBuilderCommon struct {
 	environment string
 
 	buildWatch bool
+	numWorkers int
 
 	gc bool
 
