@@ -64,16 +64,20 @@ type capturer struct {
 }
 
 func newCapturer(
+	numWorkers int,
 	logger *loggers.Logger,
 	sourceSpec *source.SourceSpec,
 	handler captureResultHandler,
 	contentChanges *contentChangeMap,
 	filenames ...string) *capturer {
 
-	numWorkers := 4
-	if n := runtime.NumCPU(); n > numWorkers {
-		numWorkers = n
+	if numWorkers == 0 {
+		numWorkers := 4
+		if n := runtime.NumCPU(); n > numWorkers {
+			numWorkers = n
+		}
 	}
+	logger.TRACE.Printf("newCapturer: %d workers\n", numWorkers)
 
 	// TODO(bep) the "index" vs "_index" check/strings should be moved in one place.
 	isBundleHeader := func(filename string) bool {

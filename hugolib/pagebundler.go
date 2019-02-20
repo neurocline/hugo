@@ -72,11 +72,19 @@ func (s *siteContentProcessor) processAssets(assets []pathLangFile) {
 }
 
 func newSiteContentProcessor(ctx context.Context, partialBuild bool, s *Site) *siteContentProcessor {
-	numWorkers := 12
-	if n := runtime.NumCPU() * 3; n > numWorkers {
-		numWorkers = n
+	// Either manually specified number of workers, or 3*logicalcpus
+	// with a minimum of 6
+	numWorkers := s.Cfg.GetInt("workers")
+	if numWorkers == 0 {
+		numWorkers = 6
+		if n := runtime.NumCPU() * 3; n > numWorkers {
+			numWorkers = n
+		}
 	}
+	s.Log.INFO.Printf("Using %d workers in newSiteContentProcessor\n", numWorkers)
 
+	// Spread workers out evenly across the sites to render, with a minimum of
+	// one worker per site
 	numWorkers = int(math.Ceil(float64(numWorkers) / float64(len(s.owner.Sites))))
 
 	return &siteContentProcessor{

@@ -1333,7 +1333,8 @@ func (s *Site) readAndProcessContent(filenames ...string) error {
 		handler = mainHandler
 	}
 
-	c := newCapturer(s.Log, sourceSpec, handler, bundleMap, filenames...)
+	numWorkers := s.Cfg.GetInt("workers")
+	c := newCapturer(numWorkers, s.Log, sourceSpec, handler, bundleMap, filenames...)
 
 	err1 := c.capture()
 
@@ -1793,15 +1794,6 @@ func (s *Site) publish(statCounter *uint64, path string, r io.Reader) (err error
 	s.PathSpec.ProcessingStats.Incr(statCounter)
 
 	return helpers.WriteToDisk(filepath.Clean(path), r, s.BaseFs.PublishFs)
-}
-
-func getGoMaxProcs() int {
-	if gmp := os.Getenv("GOMAXPROCS"); gmp != "" {
-		if p, err := strconv.Atoi(gmp); err != nil {
-			return p
-		}
-	}
-	return 1
 }
 
 func (s *Site) newNodePage(typ string, sections ...string) *Page {
