@@ -265,6 +265,7 @@ func applyDeps(cfg deps.DepsCfg, sites ...*Site) error {
 
 			var err error
 			d, err = deps.New(cfg)
+			StartupTimerStep("deps.New")
 			if err != nil {
 				return err
 			}
@@ -275,7 +276,7 @@ func applyDeps(cfg deps.DepsCfg, sites ...*Site) error {
 				return err
 			}
 
-			if err = d.LoadResources(); err != nil {
+			if err = d.LoadResources(defaultTimer); err != nil {
 				return err
 			}
 
@@ -284,6 +285,7 @@ func applyDeps(cfg deps.DepsCfg, sites ...*Site) error {
 			if err != nil {
 				return err
 			}
+			StartupTimerStep("ForLanguage")
 			d.OutputFormatsConfig = s.outputFormatsConfig
 		}
 

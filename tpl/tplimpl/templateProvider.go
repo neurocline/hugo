@@ -15,6 +15,7 @@ package tplimpl
 
 import (
 	"github.com/gohugoio/hugo/deps"
+	"github.com/spf13/nitro"
 )
 
 // TemplateProvider manages templates.
@@ -25,7 +26,7 @@ var DefaultTemplateProvider *TemplateProvider
 
 // Update updates the Hugo Template System in the provided Deps
 // with all the additional features, templates & functions.
-func (*TemplateProvider) Update(deps *deps.Deps) error {
+func (*TemplateProvider) Update(deps *deps.Deps, defaultTimer *nitro.B) error {
 
 	newTmpl := newTemplateAdapter(deps)
 	deps.Tmpl = newTmpl
@@ -37,11 +38,17 @@ func (*TemplateProvider) Update(deps *deps.Deps) error {
 	if err := newTmpl.loadEmbedded(); err != nil {
 		return err
 	}
+	if defaultTimer != nil {
+		defaultTimer.Step("loadEmbedded")
+	}
 
 	if deps.WithTemplate != nil {
 		err := deps.WithTemplate(newTmpl)
 		if err != nil {
 			return err
+		}
+		if defaultTimer != nil {
+			defaultTimer.Step("WithTemplate")
 		}
 
 	}

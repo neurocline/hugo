@@ -25,6 +25,7 @@ import (
 	"github.com/nicksnyder/go-i18n/i18n/bundle"
 	"github.com/nicksnyder/go-i18n/i18n/language"
 	_errors "github.com/pkg/errors"
+	"github.com/spf13/nitro"
 )
 
 // TranslationProvider provides translation handling, i.e. loading
@@ -39,7 +40,7 @@ func NewTranslationProvider() *TranslationProvider {
 }
 
 // Update updates the i18n func in the provided Deps.
-func (tp *TranslationProvider) Update(d *deps.Deps) error {
+func (tp *TranslationProvider) Update(d *deps.Deps, defaultTimer *nitro.B) error {
 	sp := source.NewSourceSpec(d.PathSpec, d.BaseFs.SourceFilesystems.I18n.Fs)
 	src := sp.NewFilesystem("")
 

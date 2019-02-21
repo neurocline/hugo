@@ -20,6 +20,7 @@ import (
 	"github.com/gohugoio/hugo/source"
 	"github.com/gohugoio/hugo/tpl"
 	jww "github.com/spf13/jwalterweatherman"
+	"github.com/spf13/nitro"
 )
 
 // Deps holds dependencies used by many.
@@ -142,7 +143,7 @@ func (b *Listeners) Notify() {
 
 // ResourceProvider is used to create and refresh, and clone resources needed.
 type ResourceProvider interface {
-	Update(deps *Deps) error
+	Update(deps *Deps, defaultTimer *nitro.B) error
 	Clone(deps *Deps) error
 }
 
@@ -152,13 +153,13 @@ func (d *Deps) TemplateHandler() tpl.TemplateHandler {
 }
 
 // LoadResources loads translations and templates.
-func (d *Deps) LoadResources() error {
+func (d *Deps) LoadResources(defaultTimer *nitro.B) error {
 	// Note that the translations need to be loaded before the templates.
-	if err := d.translationProvider.Update(d); err != nil {
+	if err := d.translationProvider.Update(d, nil); err != nil {
 		return err
 	}
 
-	if err := d.templateProvider.Update(d); err != nil {
+	if err := d.templateProvider.Update(d, defaultTimer); err != nil {
 		return err
 	}
 

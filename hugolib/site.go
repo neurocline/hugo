@@ -632,7 +632,11 @@ func (s *Site) multilingual() *Multilingual {
 }
 
 func init() {
-	defaultTimer = nitro.Initalize()
+	defaultTimer = nitro.Initialize()
+}
+
+func StartupTimerStep(step string) {
+	defaultTimer.Step(step)
 }
 
 func (s *Site) timerStep(step string) {
@@ -797,7 +801,7 @@ func (s *Site) processPartial(events []fsnotify.Event) (whatChanged, error) {
 		first := sites[0]
 
 		// TOD(bep) globals clean
-		if err := first.Deps.LoadResources(); err != nil {
+		if err := first.Deps.LoadResources(nil); err != nil {
 			return whatChanged{}, err
 		}
 

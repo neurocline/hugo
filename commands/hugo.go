@@ -80,6 +80,7 @@ func (r Response) IsUserError() bool {
 // Execute adds all child commands to the root command HugoCmd and sets flags appropriately.
 // The args are usually filled with os.Args[1:].
 func Execute(args []string) Response {
+	nitro.AnalysisOn = true
 	hugoCmd := newCommandsBuilder().addAll().build()
 	cmd := hugoCmd.getCommand()
 	cmd.SetArgs(args)
@@ -118,6 +119,7 @@ func initializeConfig(mustHaveConfigFile, running bool,
 	f flagsToConfigHandler,
 	doWithCommandeer func(c *commandeer) error) (*commandeer, error) {
 
+	hugolib.StartupTimerStep("command start")
 	c, err := newCommandeer(mustHaveConfigFile, running, h, f, doWithCommandeer)
 	if err != nil {
 		return nil, err

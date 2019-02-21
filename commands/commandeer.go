@@ -363,6 +363,7 @@ func (c *commandeer) loadConfig(mustHaveConfigFile, running bool) error {
 
 		var h *hugolib.HugoSites
 
+		hugolib.StartupTimerStep("config+logger+fsinit")
 		h, err = hugolib.NewHugoSites(*c.DepsCfg)
 		c.hugo = h
 
