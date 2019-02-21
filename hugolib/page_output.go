@@ -115,7 +115,8 @@ func (p *PageOutput) layouts(layouts ...string) ([]string, error) {
 		p.outputFormat)
 }
 
-func (p *PageOutput) Render(layout ...string) template.HTML {
+// This is not called from anywhere.
+func (p *PageOutput) Render_unused(layout ...string) template.HTML {
 	l, err := p.layouts(layout...)
 	if err != nil {
 		p.s.DistinctErrorLog.Printf("in .Render: Failed to resolve layout %q for page %q", layout, p.pathOrTitle())
@@ -131,7 +132,7 @@ func (p *PageOutput) Render(layout ...string) template.HTML {
 			templ, found = p.s.Tmpl.Lookup(layout + ".html")
 		}
 		if templ != nil {
-			res, err := executeToString(templ, p)
+			res, err := executeToString_unused(templ, p)
 			if err != nil {
 				p.s.DistinctErrorLog.Printf("in .Render: Failed to execute template %q: %s", layout, err)
 				return template.HTML("")
@@ -144,7 +145,8 @@ func (p *PageOutput) Render(layout ...string) template.HTML {
 
 }
 
-func executeToString(templ tpl.Template, data interface{}) (string, error) {
+// This is not called from anywhere.
+func executeToString_unused(templ tpl.Template, data interface{}) (string, error) {
 	b := bp.GetBuffer()
 	defer bp.PutBuffer(b)
 	if err := templ.Execute(b, data); err != nil {
@@ -154,11 +156,12 @@ func executeToString(templ tpl.Template, data interface{}) (string, error) {
 
 }
 
-func (p *Page) Render(layout ...string) template.HTML {
+// This is not called from anywhere.
+func (p *Page) Render_unused(layout ...string) template.HTML {
 	if p.mainPageOutput == nil {
 		panic(fmt.Sprintf("programming error: no mainPageOutput for %q", p.Path()))
 	}
-	return p.mainPageOutput.Render(layout...)
+	return p.mainPageOutput.Render_unused(layout...)
 }
 
 // OutputFormats holds a list of the relevant output formats for a given resource.
