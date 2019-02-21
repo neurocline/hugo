@@ -56,6 +56,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/fsync"
 	jww "github.com/spf13/jwalterweatherman"
+	"github.com/spf13/nitro"
 )
 
 // The Response value from Execute.
@@ -274,6 +275,8 @@ func ifTerminal(s string) string {
 	return s
 }
 
+var copyStaticTime time.Duration
+
 func (c *commandeer) fullBuild() error {
 	var (
 		g         errgroup.Group
@@ -290,6 +293,9 @@ func (c *commandeer) fullBuild() error {
 	}
 
 	copyStaticFunc := func() error {
+		defer func(start time.Time) {
+			copyStaticTime = time.Since(start)
+		}(time.Now())
 		cnt, err := c.copyStatic()
 		if err != nil {
 			if !os.IsNotExist(err) {
@@ -375,6 +381,9 @@ func (c *commandeer) build() error {
 		<-sigs
 	}
 
+	if nitro.AnalysisOn {
+		c.timeTrack(time.Now().Add(-copyStaticTime), "Static files")
+	}
 	return nil
 }
 
@@ -392,6 +401,9 @@ func (c *commandeer) serverBuild() error {
 		fmt.Println()
 	}
 
+	if nitro.AnalysisOn {
+		c.timeTrack(time.Now().Add(-copyStaticTime), "Static files")
+	}
 	return nil
 }
 
