@@ -1023,6 +1023,7 @@ func (s *Site) readDataFromSourceFS() error {
 }
 
 func (s *Site) process(config BuildCfg) (err error) {
+	s.Log.TRACE.Printf("(*Site).process")
 	if err = s.initialize(); err != nil {
 		return
 	}
@@ -1293,6 +1294,9 @@ func (c *contentCaptureResultHandler) handleCopyFiles(files ...pathLangFile) {
 }
 
 func (s *Site) readAndProcessContent(filenames ...string) error {
+	s.Log.TRACE.Printf("readAndProcessContent enter")
+	defer s.Log.TRACE.Printf("readAndProcessContent exit")
+
 	ctx := context.Background()
 	g, ctx := errgroup.WithContext(ctx)
 
@@ -1333,7 +1337,8 @@ func (s *Site) readAndProcessContent(filenames ...string) error {
 		handler = mainHandler
 	}
 
-	c := newCapturer(s.Log, sourceSpec, handler, bundleMap, filenames...)
+	numWorkers := s.Cfg.GetInt("workers")
+	c := newCapturer(numWorkers, s.Log, sourceSpec, handler, bundleMap, filenames...)
 
 	err1 := c.capture()
 
@@ -1800,13 +1805,16 @@ func layoutsLogFormat(layouts []string) string {
 func (s *Site) findFirstTemplate(layouts ...string) tpl.Template {
 	for _, layout := range layouts {
 		if templ, found := s.Tmpl.Lookup(layout); found {
+			s.Log.DEBUG.Printf("(*Site).findFirstTemplate: using %s\n", templ.Name())
 			return templ
 		}
 	}
+	s.Log.DEBUG.Printf("(*Site).findFirstTemplate: no template found in layouts=%v\n", layouts)
 	return nil
 }
 
 func (s *Site) publish(statCounter *uint64, path string, r io.Reader) (err error) {
+	s.Log.TRACE.Printf("(*Site).publish target=%s (in %s)\n", filepath.Clean(path), s.Paths.AbsPublishDir)
 	s.PathSpec.ProcessingStats.Incr(statCounter)
 
 	return helpers.WriteToDisk(filepath.Clean(path), r, s.BaseFs.PublishFs)

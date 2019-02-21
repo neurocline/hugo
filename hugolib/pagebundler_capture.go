@@ -60,20 +60,24 @@ type capturer struct {
 	contentChanges *contentChangeMap
 
 	// Semaphore used to throttle the concurrent sub directory handling.
-	sem chan bool
+	sem_ chan bool
 }
 
 func newCapturer(
+	numWorkers int,
 	logger *loggers.Logger,
 	sourceSpec *source.SourceSpec,
 	handler captureResultHandler,
 	contentChanges *contentChangeMap,
 	filenames ...string) *capturer {
 
-	numWorkers := 4
-	if n := runtime.NumCPU(); n > numWorkers {
-		numWorkers = n
+	if numWorkers == 0 {
+		numWorkers := 4
+		if n := runtime.NumCPU(); n > numWorkers {
+			numWorkers = n
+		}
 	}
+	logger.TRACE.Printf("newCapturer: %d workers\n", numWorkers)
 
 	// TODO(bep) the "index" vs "_index" check/strings should be moved in one place.
 	isBundleHeader := func(filename string) bool {
@@ -100,7 +104,7 @@ func newCapturer(
 	})
 
 	c := &capturer{
-		sem:            make(chan bool, numWorkers),
+		sem_:            make(chan bool, numWorkers),
 		handler:        handler,
 		sourceSpec:     sourceSpec,
 		fs:             sourceSpec.SourceFs,
@@ -211,18 +215,18 @@ func (c *capturer) capture() error {
 
 func (c *capturer) handleNestedDir(dirname string) error {
 	select {
-	case c.sem <- true:
+	case c.sem_ <- true:
 		var g errgroup.Group
 
 		g.Go(func() error {
 			defer func() {
-				<-c.sem
+				<-c.sem_
 			}()
 			return c.handleDir(dirname)
 		})
 		return g.Wait()
 	default:
-		// For deeply nested file trees, waiting for a semaphore wil deadlock.
+		// For deeply nested file trees, waiting for a semaphore will deadlock.
 		return c.handleDir(dirname)
 	}
 }
@@ -570,6 +574,7 @@ func (c *capturer) readDir(dirname string) (pathLangFileFis, error) {
 			}
 
 			pfis = append(pfis, fip)
+			c.logger.TRACE.Printf("readDir: got %s\n", fip.Path())
 		}
 	}
 

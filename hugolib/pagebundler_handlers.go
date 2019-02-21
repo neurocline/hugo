@@ -81,6 +81,7 @@ type contentHandlers struct {
 
 func (c *contentHandlers) processFirstMatch(handlers ...contentHandler) func(ctx *handlerContext) handlerResult {
 	return func(ctx *handlerContext) handlerResult {
+		//c.s.Log.TRACE.Printf("processFirstMatch: %d handlers\n", len(handlers))
 		for _, h := range handlers {
 			res := h(ctx)
 			if res.handled || res.err != nil {
@@ -192,6 +193,7 @@ func (c *contentHandlers) parsePage(h contentHandler) contentHandler {
 		if !ctx.isContentFile() {
 			return notHandled
 		}
+		c.s.Log.TRACE.Printf("parsePage %s\n", ctx.file().Path())
 
 		result := handlerResult{handled: true}
 		fi := ctx.file()
@@ -270,6 +272,7 @@ func (c *contentHandlers) handlePageContent() contentHandler {
 		if ctx.supports("html", "htm") {
 			return notHandled
 		}
+		c.s.Log.TRACE.Printf("handlePageContent %s\n", ctx.currentPage.File.Path())
 
 		p := ctx.currentPage
 
@@ -292,6 +295,7 @@ func (c *contentHandlers) handleHTMLContent() contentHandler {
 		if !ctx.supports("html", "htm") {
 			return notHandled
 		}
+		c.s.Log.TRACE.Printf("handleHTMLContent %s\n", ctx.currentPage.File.Path())
 
 		p := ctx.currentPage
 
@@ -308,6 +312,7 @@ func (c *contentHandlers) createResource() contentHandler {
 		if ctx.parentPage == nil {
 			return notHandled
 		}
+		c.s.Log.TRACE.Printf("createResource\n")
 
 		resource, err := c.s.ResourceSpec.New(
 			resources.ResourceSourceDescriptor{
@@ -324,6 +329,7 @@ func (c *contentHandlers) createResource() contentHandler {
 
 func (c *contentHandlers) copyFile() contentHandler {
 	return func(ctx *handlerContext) handlerResult {
+		c.s.Log.TRACE.Printf("copyFile\n")
 		f, err := c.s.BaseFs.Content.Fs.Open(ctx.source.Filename())
 		if err != nil {
 			err := fmt.Errorf("failed to open file in copyFile: %s", err)

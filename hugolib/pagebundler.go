@@ -117,6 +117,7 @@ func (s *siteContentProcessor) process(ctx context.Context) error {
 				panic(fmt.Sprintf("invalid page site: %v vs %v", p.s, s))
 			}
 
+			s.site.Log.TRACE.Printf("(*siteContentProcessor).process got page %s -> %s (%d bytes)\n", p.Path(), p.title, len(p.workContent))
 			if s.partialBuild {
 				p.forceRender = true
 				s.site.replacePage(p)
@@ -135,6 +136,7 @@ func (s *siteContentProcessor) process(ctx context.Context) error {
 					if !ok {
 						return nil
 					}
+					s.site.Log.TRACE.Printf("(*siteContentProcessor).process make single file %s\n", f.Path())
 					err := s.readAndConvertContentFile(f)
 					if err != nil {
 						return err
@@ -152,6 +154,7 @@ func (s *siteContentProcessor) process(ctx context.Context) error {
 					if !ok {
 						return nil
 					}
+					s.site.Log.TRACE.Printf("(*siteContentProcessor).process make %d assets\n", len(files))
 					for _, file := range files {
 						f, err := s.site.BaseFs.Content.Fs.Open(file.Filename())
 						if err != nil {
@@ -177,6 +180,7 @@ func (s *siteContentProcessor) process(ctx context.Context) error {
 					if !ok {
 						return nil
 					}
+					s.site.Log.TRACE.Printf("(*siteContentProcessor).process make bundle %s\n", bundle.fi.Path())
 					err := s.readAndConvertContentBundle(bundle)
 					if err != nil {
 						return err
