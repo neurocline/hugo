@@ -1333,7 +1333,8 @@ func (s *Site) readAndProcessContent(filenames ...string) error {
 		handler = mainHandler
 	}
 
-	c := newCapturer(s.Log, sourceSpec, handler, bundleMap, filenames...)
+	numWorkers := s.Cfg.GetInt("workers")
+	c := newCapturer(numWorkers, s.Log, sourceSpec, handler, bundleMap, filenames...)
 
 	err1 := c.capture()
 
