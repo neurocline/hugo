@@ -1116,6 +1116,13 @@ func (p *Page) Permalink() string {
 	if p.headless {
 		return ""
 	}
+
+	// If this is an HTML page, we can't emit a Permalink, this would
+	// break post-output fixup.
+	if p.mainPageOutput.outputFormat.Name == "HTML" {
+		return p.relPermalink
+	}
+
 	return p.permalink
 }
 

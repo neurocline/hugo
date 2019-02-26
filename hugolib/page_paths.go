@@ -144,7 +144,20 @@ func (p *Page) initURLs() error {
 		// Any language code in the path will be added later.
 		p.relTargetPathBase = strings.TrimPrefix(p.relTargetPathBase, prefix+"/")
 	}
-	p.relPermalink = p.s.PathSpec.PrependBasePath(rel, false)
+
+	// If we are writing HTML, then we need a site-relative URL; we only make
+	// path-absolute-URL links for non-HTML.
+	// TODO: this is wrong if we are writing multiple output formats from a single page.
+	// But I see lines of code in this very function doing that, so maybe it has to work?
+	if !strings.HasPrefix(rel, "/") {
+		p.s.Log.ERROR.Printf("Expected site-relative URL: %s\n", rel)
+	}
+
+	p.relPermalink = rel
+	if p.outputFormats[0].Name != "HTML" {
+		p.relPermalink = p.s.PathSpec.PrependBasePath(rel)
+	}
+
 	p.layoutDescriptor = p.createLayoutDescriptor()
 	return nil
 }

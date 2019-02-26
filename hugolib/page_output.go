@@ -308,6 +308,12 @@ func (o OutputFormats) Get(name string) *OutputFormat {
 
 // Permalink returns the absolute permalink to this output format.
 func (o *OutputFormat) Permalink() string {
+	// We need site-relative links for HTML, so redirect to RelPermalink
+	// if this is an HTML output format.
+	if o.Name() == "HTML" {
+		return o.RelPermalink()
+	}
+
 	rel := o.p.createRelativePermalinkForOutputFormat(o.f)
 	perm, _ := o.p.s.permalinkForOutputFormat(rel, o.f)
 	return perm
@@ -316,5 +322,16 @@ func (o *OutputFormat) Permalink() string {
 // RelPermalink returns the relative permalink to this output format.
 func (o *OutputFormat) RelPermalink() string {
 	rel := o.p.createRelativePermalinkForOutputFormat(o.f)
-	return o.p.s.PathSpec.PrependBasePath(rel, false)
+
+	if !strings.HasPrefix(rel, "/") {
+		o.p.s.Log.ERROR.Printf("Expected site-relative URL: %s\n", rel)
+	}
+
+	// We want site-relative links for HTML output, which is what rel
+	// is right now. For non-HTML, prepend the base path if any.
+	// TODO: is this ever called for non-HTML output?
+	if o.Name() != "HTML" {
+		rel = o.p.s.PathSpec.PrependBasePath(rel)
+	}
+	return rel
 }

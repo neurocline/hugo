@@ -24,6 +24,8 @@ import (
 	"github.com/gohugoio/hugo/config"
 
 	"github.com/spf13/cast"
+
+	jww "github.com/spf13/jwalterweatherman"
 )
 
 // Pager represents one of the elements in a paginator.
@@ -588,7 +590,13 @@ func newPaginationURLFactory(d targetPathDescriptor) paginationURLFactory {
 
 		targetPath := createTargetPath(pathDescriptor)
 		targetPath = strings.TrimSuffix(targetPath, d.Type.BaseFilename())
-		link := d.PathSpec.PrependBasePath(targetPath, false)
+		link := targetPath
+		if !strings.HasPrefix(link, "/") {
+			jww.ERROR.Printf("Expected site-relative URL: %s\n", link)
+		}
+		if d.Type.Name != "HTML" {
+			link = d.PathSpec.PrependBasePath(targetPath)
+		}
 		// Note: The targetPath is massaged with MakePathSanitized
 		return d.PathSpec.URLizeFilename(link)
 	}

@@ -42,15 +42,15 @@ type Namespace struct {
 	multihost bool
 }
 
-// AbsURL takes a given string and converts it to an absolute URL.
-func (ns *Namespace) AbsURL(a interface{}) (template.HTML, error) {
-	s, err := cast.ToStringE(a)
-	if err != nil {
-		return "", nil
-	}
-
-	return template.HTML(ns.deps.PathSpec.AbsURL(s, false)), nil
-}
+//// AbsURL takes a given string and converts it to an absolute URL.
+//func (ns *Namespace) AbsURL(a interface{}) (template.HTML, error) {
+//	s, err := cast.ToStringE(a)
+//	if err != nil {
+//		return "", nil
+//	}
+//
+//	return template.HTML(ns.deps.PathSpec.AbsURL(s, false)), nil
+//}
 
 // Parse parses rawurl into a URL structure. The rawurl may be relative or
 // absolute.
@@ -93,18 +93,18 @@ func (ns *Namespace) Anchorize(a interface{}) (string, error) {
 }
 
 // Ref returns the absolute URL path to a given content item.
-func (ns *Namespace) Ref(in interface{}, args interface{}) (template.HTML, error) {
-	p, ok := in.(urls.RefLinker)
-	if !ok {
-		return "", errors.New("invalid Page received in Ref")
-	}
-	argsm, err := ns.refArgsToMap(args)
-	if err != nil {
-		return "", err
-	}
-	s, err := p.Ref(argsm)
-	return template.HTML(s), err
-}
+//func (ns *Namespace) Ref(in interface{}, args interface{}) (template.HTML, error) {
+//	p, ok := in.(urls.RefLinker)
+//	if !ok {
+//		return "", errors.New("invalid Page received in Ref")
+//	}
+//	argsm, err := ns.refArgsToMap(args)
+//	if err != nil {
+//		return "", err
+//	}
+//	s, err := p.Ref(argsm)
+//	return template.HTML(s), err
+//}
 
 // RelRef returns the relative URL path to a given content item.
 func (ns *Namespace) RelRef(in interface{}, args interface{}) (template.HTML, error) {
@@ -172,11 +172,11 @@ func (ns *Namespace) RelLangURL(a interface{}) (template.HTML, error) {
 // AbsLangURL takes a given string and converts it to an absolute URL according
 // to a page's position in the project directory structure and the current
 // language.
-func (ns *Namespace) AbsLangURL(a interface{}) (template.HTML, error) {
-	s, err := cast.ToStringE(a)
-	if err != nil {
-		return "", err
-	}
-
-	return template.HTML(ns.deps.PathSpec.AbsURL(s, !ns.multihost)), nil
-}
+//func (ns *Namespace) AbsLangURL(a interface{}) (template.HTML, error) {
+//	s, err := cast.ToStringE(a)
+//	if err != nil {
+//		return "", err
+//	}
+//
+//	return template.HTML(ns.deps.PathSpec.AbsURL(s, !ns.multihost)), nil
+//}

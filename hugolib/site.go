@@ -432,7 +432,20 @@ func (s *SiteInfo) String() string {
 	return fmt.Sprintf("Site(%q)", s.Title)
 }
 
+// BaseURL is .Site.BaseURL to template writers, used to put the baseURL value
+// into the output. However, this is a mistake; users cannot use this in templates
+// and expect their sites to work in all circumstances. If this is for HTML
+// output, then we need this to just be "/" (or we create impossible-to-fixup
+// links). It emits the full URL for non-HTML output.
+// TODO: do I understand how ouput works? What if a page is written in multiple
+// formats?
 func (s *SiteInfo) BaseURL() template.URL {
+	// Actually, I'm pretty sure this can't work. At the site level, we have the
+	// union of all possible formats. But this is being called as a template
+	// action, it's just that we've lost the context for what's happening.
+	if s.s.renderFormats[0].Name == "HTML" {
+		return template.URL("/")
+	}
 	return template.URL(s.s.PathSpec.BaseURL.String())
 }
 
@@ -1699,6 +1712,17 @@ func (s *Site) renderAndWritePage(statCounter *uint64, name string, targetPath s
 
 	isHTML := p.outputFormat.IsHTML
 
+	// Set the rewrite path. All our links are currently in path-absolute-URL
+	// form (starting with /) or path-relative-URL (not starting with scheme+host
+	// or /). We need to rewrite all of these into one of three forms
+	// - absolute-URL if canonifyURLs=true
+	// - path-relative URL if relativeURLs=true
+	// - site-relative if .Site.BaseURL has a path
+	// Site-relative is unique to Hugo in that we need to make the path-absolute-URL
+	// links have an extra prefix path, because our site could be a sub-site embedded
+	// in another site.
+	// We assume that any absolute paths point outside our source. Add warnings
+	// if we encounter absolute paths pointing inside .Site.BaseURL.
 	var path string
 
 	if s.Info.relativeURLs {
@@ -1709,6 +1733,11 @@ func (s *Site) renderAndWritePage(statCounter *uint64, name string, targetPath s
 			url += "/"
 		}
 		path = url
+	} else if s.PathSpec.BaseURL.Path() != "" {
+		path = s.PathSpec.BaseURL.Path()
+		if !strings.HasSuffix(path, "/") {
+			path += "/"
+		}
 	}
 
 	pd := publisher.Descriptor{
@@ -1719,7 +1748,7 @@ func (s *Site) renderAndWritePage(statCounter *uint64, name string, targetPath s
 	}
 
 	if isHTML {
-		if s.Info.relativeURLs || s.Info.canonifyURLs {
+		if path != "" {
 			pd.AbsURLPath = path
 		}
 

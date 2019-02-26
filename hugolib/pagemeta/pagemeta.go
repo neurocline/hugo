@@ -19,7 +19,7 @@ import (
 
 type URLPath struct {
 	URL       string
-	Permalink string
+	Permalink_ string // this is unused by anything in the code
 	Slug      string
 	Section   string
 }

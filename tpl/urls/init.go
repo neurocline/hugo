@@ -29,29 +29,36 @@ func init() {
 			Context: func(args ...interface{}) interface{} { return ctx },
 		}
 
-		ns.AddMethodMapping(ctx.AbsURL,
-			[]string{"absURL"},
-			[][2]string{},
-		)
+		// Absolute URL functions now just call Relative URL funtions;
+		// we do all absolute-URL or path-relative-URL creation in postprocessing.
+		// The absolute and relative functions should be deprecated, leaving
+		// just neutral functions like "URL" and "Ref"
 
-		ns.AddMethodMapping(ctx.AbsLangURL,
-			[]string{"absLangURL"},
-			[][2]string{},
-		)
-		ns.AddMethodMapping(ctx.Ref,
-			[]string{"ref"},
-			[][2]string{},
-		)
+		//ns.AddMethodMapping(ctx.RelURL,
+		//	[]string{"absURL"},
+		//	[][2]string{},
+		//)
+		//ns.AddMethodMapping(ctx.RelLangURL,
+		//	[]string{"absLangURL"},
+		//	[][2]string{},
+		//)
+		//ns.AddMethodMapping(ctx.RelRef,
+		//	[]string{"ref"},
+		//	[][2]string{},
+		//)
+		// Note: AbsURL is now an alias for RelURL
 		ns.AddMethodMapping(ctx.RelURL,
-			[]string{"relURL"},
+			[]string{"relURL", "absURL"},
 			[][2]string{},
 		)
+		// Note: AbsLangURL is now an alias for relLangURL
 		ns.AddMethodMapping(ctx.RelLangURL,
-			[]string{"relLangURL"},
+			[]string{"relLangURL", "absLangURL"},
 			[][2]string{},
 		)
+		// Note: Ref is now an alias for RelRef
 		ns.AddMethodMapping(ctx.RelRef,
-			[]string{"relref"},
+			[]string{"relref", "ref"},
 			[][2]string{},
 		)
 		ns.AddMethodMapping(ctx.URLize,

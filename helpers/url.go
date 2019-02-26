@@ -157,48 +157,48 @@ func MakePermalink(host, plink string) *url.URL {
 }
 
 // AbsURL creates an absolute URL from the relative path given and the BaseURL set in config.
-func (p *PathSpec) AbsURL(in string, addLanguage bool) string {
-	url, err := url.Parse(in)
-	if err != nil {
-		return in
-	}
-
-	if url.IsAbs() || strings.HasPrefix(in, "//") {
-		return in
-	}
-
-	var baseURL string
-	if strings.HasPrefix(in, "/") {
-		u := p.BaseURL.URL()
-		u.Path = ""
-		baseURL = u.String()
-	} else {
-		baseURL = p.BaseURL.String()
-	}
-
-	if addLanguage {
-		prefix := p.GetLanguagePrefix()
-		if prefix != "" {
-			hasPrefix := false
-			// avoid adding language prefix if already present
-			if strings.HasPrefix(in, "/") {
-				hasPrefix = strings.HasPrefix(in[1:], prefix)
-			} else {
-				hasPrefix = strings.HasPrefix(in, prefix)
-			}
-
-			if !hasPrefix {
-				addSlash := in == "" || strings.HasSuffix(in, "/")
-				in = path.Join(prefix, in)
-
-				if addSlash {
-					in += "/"
-				}
-			}
-		}
-	}
-	return MakePermalink(baseURL, in).String()
-}
+//func (p *PathSpec) AbsURL(in string, addLanguage bool) string {
+//	url, err := url.Parse(in)
+//	if err != nil {
+//		return in
+//	}
+//
+//	if url.IsAbs() || strings.HasPrefix(in, "//") {
+//		return in
+//	}
+//
+//	var baseURL string
+//	if strings.HasPrefix(in, "/") {
+//		u := p.BaseURL.URL()
+//		u.Path = ""
+//		baseURL = u.String()
+//	} else {
+//		baseURL = p.BaseURL.String()
+//	}
+//
+//	if addLanguage {
+//		prefix := p.GetLanguagePrefix()
+//		if prefix != "" {
+//			hasPrefix := false
+//			// avoid adding language prefix if already present
+//			if strings.HasPrefix(in, "/") {
+//				hasPrefix = strings.HasPrefix(in[1:], prefix)
+//			} else {
+//				hasPrefix = strings.HasPrefix(in, prefix)
+//			}
+//
+//			if !hasPrefix {
+//				addSlash := in == "" || strings.HasSuffix(in, "/")
+//				in = path.Join(prefix, in)
+//
+//				if addSlash {
+//					in += "/"
+//				}
+//			}
+//		}
+//	}
+//	return MakePermalink(baseURL, in).String()
+//}
 
 // IsAbsURL determines whether the given path points to an absolute URL.
 func IsAbsURL(path string) bool {
@@ -210,15 +210,33 @@ func IsAbsURL(path string) bool {
 	return url.IsAbs() || strings.HasPrefix(path, "//")
 }
 
-// RelURL creates a URL relative to the BaseURL root.
-// Note: The result URL will not include the context root if canonifyURLs is enabled.
-func (p *PathSpec) RelURL(in string, addLanguage bool) string {
+// RelURL creates a URL relative to BaseURL (host+path)
+// Use this from inside content generation, as content is made relative to the site.
+func (p* PathSpec) RelURL(in string, addLanguage bool) string {
+	return p.relURL(in, addLanguage, false)
+}
+
+// HostRelURL creates a URL relative to the BaseURL host (this is called
+// path-absolute-URL by WhatWG). Use this to get a host-relative URL.
+//
+// TODO: maybe this should be called PathAbsURL (I didn't because that goes
+// against other Hugo terms)? We really need to settle on one terminology
+// and align it with standards docs.
+func (p *PathSpec) HostRelURL(in string, addLanguage bool) string {
+	return p.relURL(in, addLanguage, true)
+}
+
+func (p *PathSpec) relURL(in string, addLanguage bool, pathAbsolute bool) string {
+
+	// If this is an absolute-URL pointing outside the site, then
+	// we can't do anything to it (is this an error?)
 	baseURL := p.BaseURL.String()
-	canonifyURLs := p.CanonifyURLs
 	if (!strings.HasPrefix(in, baseURL) && strings.HasPrefix(in, "http")) || strings.HasPrefix(in, "//") {
 		return in
 	}
 
+	// If this is an absolute-URL pointing to somewhere in our site, turn
+	// it to a site-relative-URL
 	u := in
 
 	if strings.HasPrefix(in, baseURL) {
@@ -248,7 +266,10 @@ func (p *PathSpec) RelURL(in string, addLanguage bool) string {
 		}
 	}
 
-	if !canonifyURLs {
+	// If the caller asked for a path-absolute-URL, make one (note that it's an error
+	// to do this from inside content generation).
+	// TODO- fix this, BaseURL already has a method Path, so why are we parsing it again?
+	if pathAbsolute {
 		u = AddContextRoot(baseURL, u)
 	}
 
@@ -282,9 +303,12 @@ func AddContextRoot(baseURL, relativePath string) string {
 	return newPath
 }
 
-// PrependBasePath prepends any baseURL sub-folder to the given resource
-func (p *PathSpec) PrependBasePath(rel string, isAbs bool) string {
-	basePath := p.GetBasePath(!isAbs)
+// PrependBasePath prepends any baseURL sub-folder to the given resource.
+// Note that the input path is expected to begin with a "/" path character.
+// Warning: this should never be called by code generating HTML output, as
+// this will create impossible-to-fixup links.
+func (p *PathSpec) PrependBasePath(rel string) string {
+	basePath := p.BaseURL.Path()
 	if basePath != "" {
 		rel = filepath.ToSlash(rel)
 		// Need to prepend any path from the baseURL

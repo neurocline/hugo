@@ -504,8 +504,14 @@ func (l *genericResource) publishIfNeeded() {
 	}
 }
 
+// Permalink makes a permalink for the given resource. Note that
+// if this is a "page", we really generate a RelPermalink, because
+// we can't insert absolute links (those can't be fixed up).
 func (l *genericResource) Permalink() string {
 	l.publishIfNeeded()
+	if l.resourceType == "page" {
+		return l.relPermalinkFor(l.relTargetDirFile.path())
+	}
 	return l.spec.PermalinkForBaseURL(l.relPermalinkForRel(l.relTargetDirFile.path(), true), l.spec.BaseURL.HostURL())
 }
 
@@ -613,8 +619,10 @@ func (l *genericResource) relTargetPathForRelAndBasePath(rel, basePath string, i
 		rel = path.Join(l.baseOffset, rel)
 	}
 
-	if isURL {
-		bp := l.spec.PathSpec.GetBasePath(!isAbs)
+	// Add baseURL if this is a URL in a non-HTML format
+	// Is this even possible?
+	if isURL && l.resourceType != "page" {
+		bp := l.spec.PathSpec.BaseURL.Path()
 		if bp != "" {
 			rel = path.Join(bp, rel)
 		}

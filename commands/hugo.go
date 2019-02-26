@@ -653,7 +653,8 @@ func (c *commandeer) rebuildSites(events []fsnotify.Event) error {
 			if langPath != "" {
 				langPath = langPath + "/"
 			}
-			home := c.hugo.PathSpec.PrependBasePath("/"+langPath, false)
+			home := c.hugo.PathSpec.PrependBasePath("/"+langPath)
+			c.Logger.WARN.Printf("Watching home=%s\n", home)
 			visited[home] = true
 		}
 
@@ -929,7 +930,7 @@ func (c *commandeer) handleEvents(watcher *watcher.Batcher,
 			if len(staticEvents) == 1 {
 				ev := staticEvents[0]
 				path := c.hugo.BaseFs.SourceFilesystems.MakeStaticPathRelative(ev.Name)
-				path = c.firstPathSpec().RelURL(helpers.ToSlashTrimLeading(path), false)
+				path = c.firstPathSpec().HostRelURL(helpers.ToSlashTrimLeading(path), false)
 				livereload.RefreshPath(path)
 			} else {
 				livereload.ForceRefresh()
@@ -961,7 +962,7 @@ func (c *commandeer) handleEvents(watcher *watcher.Batcher,
 					// Nothing has changed.
 					return
 				} else if len(changed) == 1 {
-					pathToRefresh := c.firstPathSpec().RelURL(helpers.ToSlashTrimLeading(changed[0]), false)
+					pathToRefresh := c.firstPathSpec().HostRelURL(helpers.ToSlashTrimLeading(changed[0]), false)
 					livereload.RefreshPath(pathToRefresh)
 				} else {
 					livereload.ForceRefresh()

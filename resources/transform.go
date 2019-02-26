@@ -262,6 +262,11 @@ func (r *transformedResource) Permalink() string {
 	if err := r.initTransform(false, true); err != nil {
 		return ""
 	}
+	// If this is a "page", we really generate a RelPermalink (we can't
+	// put Permalinks in the same file as .Content)
+	if r.ResourceType() == "page" {
+		return r.linker.relPermalinkFor(r.Target)
+	}
 	return r.linker.permalinkFor(r.Target)
 }
 

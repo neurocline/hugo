@@ -34,7 +34,7 @@ type Paths struct {
 	BaseURL
 
 	// If the baseURL contains a base path, e.g. https://example.com/docs, then "/docs" will be the BasePath.
-	BasePath string
+	//BasePath_ string
 
 	// Directories
 	// TODO(bep) when we have trimmed down mos of the dirs usage outside of this package, make
@@ -189,15 +189,6 @@ func New(fs *hugofs.Fs, cfg config.Provider) (*Paths, error) {
 	p.PublishDir = absPublishDir
 
 	return p, nil
-}
-
-// GetBasePath returns any path element in baseURL if needed.
-func (p *Paths) GetBasePath(isRelativeURL bool) string {
-	if isRelativeURL && p.CanonifyURLs {
-		// The baseURL will be prepended later.
-		return ""
-	}
-	return p.BasePath
 }
 
 func (p *Paths) Lang() string {
