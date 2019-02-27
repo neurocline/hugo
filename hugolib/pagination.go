@@ -588,7 +588,11 @@ func newPaginationURLFactory(d targetPathDescriptor) paginationURLFactory {
 
 		targetPath := createTargetPath(pathDescriptor)
 		targetPath = strings.TrimSuffix(targetPath, d.Type.BaseFilename())
-		link := d.PathSpec.PrependBasePath(targetPath, false)
+		// HTML links don't get basepath now, that's done at publish-time fixup
+		link := targetPath
+		if d.Type.Name != "HTML" {
+			link = d.PathSpec.PrependBasePath(targetPath)
+		}
 		// Note: The targetPath is massaged with MakePathSanitized
 		return d.PathSpec.URLizeFilename(link)
 	}

@@ -190,12 +190,14 @@ permalinkeds:
 		}
 	}
 
+	// Remember that RelPermalink lacks the baseurl path if it's HTML
+	// (this is because fixup is done at page publish time).
 	cat1 := s.getPage(KindTaxonomy, "categories", "cat1")
 	require.NotNil(t, cat1)
 	if uglyURLs {
-		require.Equal(t, "/blog/categories/cat1.html", cat1.RelPermalink())
+		require.Equal(t, "/categories/cat1.html", cat1.RelPermalink())
 	} else {
-		require.Equal(t, "/blog/categories/cat1/", cat1.RelPermalink())
+		require.Equal(t, "/categories/cat1/", cat1.RelPermalink())
 	}
 
 	pl1 := s.getPage(KindTaxonomy, "permalinkeds", "pl1")
@@ -203,11 +205,11 @@ permalinkeds:
 	require.NotNil(t, pl1)
 	require.NotNil(t, permalinkeds)
 	if uglyURLs {
-		require.Equal(t, "/blog/perma/pl1.html", pl1.RelPermalink())
-		require.Equal(t, "/blog/permalinkeds.html", permalinkeds.RelPermalink())
+		require.Equal(t, "/perma/pl1.html", pl1.RelPermalink())
+		require.Equal(t, "/permalinkeds.html", permalinkeds.RelPermalink())
 	} else {
-		require.Equal(t, "/blog/perma/pl1/", pl1.RelPermalink())
-		require.Equal(t, "/blog/permalinkeds/", permalinkeds.RelPermalink())
+		require.Equal(t, "/perma/pl1/", pl1.RelPermalink())
+		require.Equal(t, "/permalinkeds/", permalinkeds.RelPermalink())
 	}
 
 	// Issue #3070 preserveTaxonomyNames

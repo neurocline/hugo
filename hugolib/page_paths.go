@@ -144,7 +144,12 @@ func (p *Page) initURLs() error {
 		// Any language code in the path will be added later.
 		p.relTargetPathBase = strings.TrimPrefix(p.relTargetPathBase, prefix+"/")
 	}
-	p.relPermalink = p.s.PathSpec.PrependBasePath(rel, false)
+
+	// Open question - it looks like this is done once per output Page. So can
+	// I just pick the right kind of relPermalink here, as opposed to in the RelPermalink
+	// action function?
+	p.relPermalink = rel // for HTML .RelPermalink
+	p.relPermalinkBased = p.s.PathSpec.PrependBasePath(rel) // for non-HTML .RelPermalink
 	p.layoutDescriptor = p.createLayoutDescriptor()
 	return nil
 }

@@ -241,6 +241,7 @@ type Page struct {
 
 	permalink    string
 	relPermalink string
+	relPermalinkBased string // used by non-HTML/non-XML output
 
 	// relative target path without extension and any base path element
 	// from the baseURL or the language code.
@@ -1102,6 +1103,11 @@ func (p *Page) IsExpired() bool {
 
 func (p *Page) URL() string {
 
+	// If the frontmatter for the page has a URL, we use it. It needs to
+	// either be an absolute-URL link (host+path+sitepath), or it
+	// needs to be a site-absolute-URL link (/sitepath). Since this is
+	// user metadata, we rely on user education to do the right thing.
+	// TODO - add extended check here for use by future "hugo check" command.
 	if p.IsPage() && p.URLPath.URL != "" {
 		// This is the url set in front matter
 		return p.URLPath.URL
@@ -1124,7 +1130,23 @@ func (p *Page) RelPermalink() string {
 	if p.headless {
 		return ""
 	}
-	return p.relPermalink
+
+	// So, this is really annoying. While template expansion was started
+	// off by a PageOutput, iterating dot can lead to Page records, which
+	// are missing the actual output format being used. So we have to
+	// look at the Page's outputFormats list and just hope that there's
+	// nothing crazy going on. That said, there's no way for an HTML
+	// template to be used to create non-HTML output, is there?
+	if p.mainPageOutput != nil && p.mainPageOutput.outputFormat.Name == "HTML" {
+		return p.relPermalink
+	} else if p.shouldRenderTo(output.HTMLFormat) {
+		// Somehow, a test somehow had p.mainPageOutput set to nil... figure that out.
+		// This is the workaround.
+		return p.relPermalink
+	}
+
+	// Non-HTML formats don't have post fixup, so they get the full based path.
+	return p.relPermalinkBased
 }
 
 // See resource.Resource

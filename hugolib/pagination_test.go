@@ -17,7 +17,6 @@ import (
 	"fmt"
 	"html/template"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/gohugoio/hugo/deps"
@@ -222,7 +221,7 @@ func TestPaginationURLFactory(t *testing.T) {
 						targetPathDescriptor{Kind: KindHome, Type: output.JSONFormat}, "http://example.com/", 42, "/zoo/42/"},
 					// Issue #1252
 					{"BaseURL with sub path",
-						targetPathDescriptor{Kind: KindHome, Type: output.HTMLFormat}, "http://example.com/sub/", 999, "/sub/zoo/999/"},
+						targetPathDescriptor{Kind: KindHome, Type: output.HTMLFormat}, "http://example.com/sub/", 999, "/zoo/999/"},
 				}
 
 				for _, test := range tests {
@@ -233,10 +232,6 @@ func TestPaginationURLFactory(t *testing.T) {
 					d.UglyURLs = uglyURLs
 
 					expected := test.expected
-
-					if canonifyURLs {
-						expected = strings.Replace(expected, "/sub", "", 1)
-					}
 
 					if uglyURLs {
 						expected = expected[:len(expected)-1] + "." + test.d.Type.MediaType.Suffix()

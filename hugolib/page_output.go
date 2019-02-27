@@ -316,5 +316,8 @@ func (o *OutputFormat) Permalink() string {
 // RelPermalink returns the relative permalink to this output format.
 func (o *OutputFormat) RelPermalink() string {
 	rel := o.p.createRelativePermalinkForOutputFormat(o.f)
-	return o.p.s.PathSpec.PrependBasePath(rel, false)
+	if o.Name() != "HTML" {
+		rel = o.p.s.PathSpec.PrependBasePath(rel)
+	}
+	return rel
 }

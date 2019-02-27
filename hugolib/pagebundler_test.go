@@ -51,9 +51,7 @@ func TestPageBundlerSiteRegular(t *testing.T) {
 					func(t *testing.T) {
 						baseURL := baseBaseURL + baseURLPath
 						relURLBase := baseURLPath
-						if canonify {
-							relURLBase = ""
-						}
+						relURLBase = "" // because .RelPermalink doesn't insert the base path any more
 						assert := require.New(t)
 						fs, cfg := newTestBundleSources(t)
 						cfg.Set("baseURL", baseURL)

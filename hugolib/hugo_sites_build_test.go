@@ -69,10 +69,15 @@ func doTestMultiSitesMainLangInRoot(t *testing.T, defaultInSubDir bool) {
 	doc1en := enSite.RegularPages[0]
 	doc1fr := frSite.RegularPages[0]
 
+	// Remember that RelPermalink on HTML docs returns a path without
+	// baseurl path (because that's added at publish time). Also note
+	// how fragile these tests are because the code that creates the sample
+	// site is far away and we can't easily look at it or find it when
+	// reading the test code.
 	enPerm := doc1en.Permalink()
 	enRelPerm := doc1en.RelPermalink()
 	assert.Equal("http://example.com/blog/en/sect/doc1-slug/", enPerm)
-	assert.Equal("/blog/en/sect/doc1-slug/", enRelPerm)
+	assert.Equal("/en/sect/doc1-slug/", enRelPerm)
 
 	frPerm := doc1fr.Permalink()
 	frRelPerm := doc1fr.RelPermalink()
@@ -82,14 +87,14 @@ func doTestMultiSitesMainLangInRoot(t *testing.T, defaultInSubDir bool) {
 
 	if defaultInSubDir {
 		assert.Equal("http://example.com/blog/fr/sect/doc1/", frPerm)
-		assert.Equal("/blog/fr/sect/doc1/", frRelPerm)
+		assert.Equal("/fr/sect/doc1/", frRelPerm)
 
 		// should have a redirect on top level.
 		b.AssertFileContent("public/index.html", `<meta http-equiv="refresh" content="0; url=http://example.com/blog/fr" />`)
 	} else {
 		// Main language in root
 		assert.Equal("http://example.com/blog/sect/doc1/", frPerm)
-		assert.Equal("/blog/sect/doc1/", frRelPerm)
+		assert.Equal("/sect/doc1/", frRelPerm)
 
 		// should have redirect back to root
 		b.AssertFileContent("public/fr/index.html", `<meta http-equiv="refresh" content="0; url=http://example.com/blog" />`)
@@ -278,7 +283,7 @@ func doTestMultiSitesBuild(t *testing.T, configTemplate, configSuffix string) {
 	doc4 := enSite.AllPages[4]
 	permalink = doc4.Permalink()
 	require.Equal(t, "http://example.com/blog/fr/sect/doc4/", permalink, "invalid doc4 permalink")
-	require.Equal(t, "/blog/fr/sect/doc4/", doc4.URL())
+	require.Equal(t, "/fr/sect/doc4/", doc4.URL())
 
 	require.Len(t, doc4.Translations(), 0, "found translations for doc4")
 
@@ -410,7 +415,7 @@ func doTestMultiSitesBuild(t *testing.T, configTemplate, configSuffix string) {
 	// Check bundles
 	bundleFr := frSite.getPage(KindPage, "bundles/b1/index.md")
 	require.NotNil(t, bundleFr)
-	require.Equal(t, "/blog/fr/bundles/b1/", bundleFr.RelPermalink())
+	require.Equal(t, "/fr/bundles/b1/", bundleFr.RelPermalink())
 	require.Equal(t, 1, len(bundleFr.Resources))
 	logoFr := bundleFr.Resources.GetMatch("logo*")
 	require.NotNil(t, logoFr)
@@ -419,7 +424,7 @@ func doTestMultiSitesBuild(t *testing.T, configTemplate, configSuffix string) {
 
 	bundleEn := enSite.getPage(KindPage, "bundles/b1/index.en.md")
 	require.NotNil(t, bundleEn)
-	require.Equal(t, "/blog/en/bundles/b1/", bundleEn.RelPermalink())
+	require.Equal(t, "/en/bundles/b1/", bundleEn.RelPermalink())
 	require.Equal(t, 1, len(bundleEn.Resources))
 	logoEn := bundleEn.Resources.GetMatch("logo*")
 	require.NotNil(t, logoEn)

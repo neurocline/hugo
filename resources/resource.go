@@ -40,6 +40,8 @@ import (
 
 	"github.com/gohugoio/hugo/helpers"
 	"github.com/gohugoio/hugo/source"
+
+	jww "github.com/spf13/jwalterweatherman"
 )
 
 var (
@@ -613,8 +615,10 @@ func (l *genericResource) relTargetPathForRelAndBasePath(rel, basePath string, i
 		rel = path.Join(l.baseOffset, rel)
 	}
 
+	// Only add baseURL path to non-HTML output. How can we ensure this?
 	if isURL {
-		bp := l.spec.PathSpec.GetBasePath(!isAbs)
+		jww.WARN.Printf("Adding baseURL path to %s (for %s)\n", rel, l.sourceFilename)
+		bp := l.spec.PathSpec.BasePath
 		if bp != "" {
 			rel = path.Join(bp, rel)
 		}

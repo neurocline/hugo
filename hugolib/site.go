@@ -1659,6 +1659,9 @@ func (s *Site) renderAndWriteXML(statCounter *uint64, name string, targetPath st
 		return err
 	}
 
+	// Make the rewrite path (see renderAndWritePage for more details).
+	// For XML, we always make URLs into absolute-URL links ("canonifyURLS")
+	// unless "relativeURLs" is specified.
 	var path string
 	if s.Info.relativeURLs {
 		path = helpers.GetDottedRelativePath(targetPath)
@@ -1680,8 +1683,9 @@ func (s *Site) renderAndWriteXML(statCounter *uint64, name string, targetPath st
 		AbsURLPath:   path,
 	}
 
+	s.Log.DEBUG.Printf("publishing XML file=%s (fixup=%q) format=%s mediaType=%s\n",
+		pd.TargetPath, path, pd.OutputFormat.Name, pd.OutputFormat.MediaType)
 	return s.publisher.Publish(pd)
-
 }
 
 func (s *Site) renderAndWritePage(statCounter *uint64, name string, targetPath string, p *PageOutput, layouts ...string) error {
@@ -1699,6 +1703,17 @@ func (s *Site) renderAndWritePage(statCounter *uint64, name string, targetPath s
 
 	isHTML := p.outputFormat.IsHTML
 
+	// Make the rewrite path. All our links are currently in path-absolute-URL
+	// form (starting with /) or path-relative-URL (not starting with scheme+host
+	// or /). We need to rewrite all of these into one of three forms
+	// - absolute-URL if canonifyURLs=true
+	// - path-relative URL if relativeURLs=true
+	// - site-relative if .Site.BaseURL has a path
+	// Site-relative is unique to Hugo in that we need to make the path-absolute-URL
+	// links have an extra prefix path, because our site could be a sub-site embedded
+	// in another site.
+	// We assume that any absolute paths point outside our source. Add warnings
+	// if we encounter absolute paths pointing inside .Site.BaseURL.
 	var path string
 
 	if s.Info.relativeURLs {
@@ -1709,6 +1724,11 @@ func (s *Site) renderAndWritePage(statCounter *uint64, name string, targetPath s
 			url += "/"
 		}
 		path = url
+	} else if s.PathSpec.BasePath != "" {
+		path = s.PathSpec.BasePath
+		if !strings.HasSuffix(path, "/") {
+			path += "/"
+		}
 	}
 
 	pd := publisher.Descriptor{
@@ -1718,8 +1738,9 @@ func (s *Site) renderAndWritePage(statCounter *uint64, name string, targetPath s
 		OutputFormat: p.outputFormat,
 	}
 
+	// We only want to rewrite URLs for HTML files
 	if isHTML {
-		if s.Info.relativeURLs || s.Info.canonifyURLs {
+		if path != "" {
 			pd.AbsURLPath = path
 		}
 
@@ -1731,11 +1752,14 @@ func (s *Site) renderAndWritePage(statCounter *uint64, name string, targetPath s
 		if p.IsHome() {
 			pd.AddHugoGeneratorTag = !s.Cfg.GetBool("disableHugoGeneratorInject")
 		}
-
 	}
 
+	s.Log.DEBUG.Printf("publishing file=%s (fixup=%q) format=%s mediaType=%s\n",
+		pd.TargetPath, path, pd.OutputFormat.Name, pd.OutputFormat.MediaType)
 	return s.publisher.Publish(pd)
 }
+
+var DebugCrazyProblem bool
 
 var infoOnMissingLayout = map[string]bool{
 	// The 404 layout is very much optional in Hugo, but we do look for it.

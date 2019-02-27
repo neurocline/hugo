@@ -69,7 +69,7 @@ languageName = "Nynorsk"
 	pageWithURLInFrontMatter := s1.getPage(KindPage, "sect/doc3.en.md")
 	assert.NotNil(pageWithURLInFrontMatter)
 	assert.Equal("/superbob", pageWithURLInFrontMatter.URL())
-	assert.Equal("/docs/superbob/", pageWithURLInFrontMatter.RelPermalink())
+	assert.Equal("/superbob/", pageWithURLInFrontMatter.RelPermalink())
 	b.AssertFileContent("public/en/superbob/index.html", "doc3|Hello|en")
 
 	// check alias:
@@ -89,14 +89,14 @@ languageName = "Nynorsk"
 	// Check paginators
 	b.AssertFileContent("public/en/page/1/index.html", `refresh" content="0; url=https://example.com/docs/"`)
 	b.AssertFileContent("public/nn/page/1/index.html", `refresh" content="0; url=https://example.no/"`)
-	b.AssertFileContent("public/en/sect/page/2/index.html", "List Page 2", "Hello", "https://example.com/docs/sect/", "\"/docs/sect/page/3/")
+	b.AssertFileContent("public/en/sect/page/2/index.html", "List Page 2", "Hello", "https://example.com/docs/sect/", "/docs/sect/page/3/")
 	b.AssertFileContent("public/fr/sect/page/2/index.html", "List Page 2", "Bonjour", "https://example.fr/sect/")
 
 	// Check bundles
 
 	bundleEn := s1.getPage(KindPage, "bundles/b1/index.en.md")
 	require.NotNil(t, bundleEn)
-	require.Equal(t, "/docs/bundles/b1/", bundleEn.RelPermalink())
+	require.Equal(t, "/bundles/b1/", bundleEn.RelPermalink())
 	require.Equal(t, 1, len(bundleEn.Resources))
 	logoEn := bundleEn.Resources.GetMatch("logo*")
 	require.NotNil(t, logoEn)

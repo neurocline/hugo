@@ -214,26 +214,26 @@ func doTestCrossrefs(t *testing.T, relative, uglyURLs bool) {
 	sources := [][2]string{
 		{
 			filepath.FromSlash("sect/doc1.md"),
-			fmt.Sprintf(`Ref 2: {{< %s "sect/doc2.md" >}}`, refShortcode),
+			fmt.Sprintf(`Ref 2: <a href="{{< %s "sect/doc2.md" >}}">link</a>`, refShortcode),
 		},
 		// Issue #1148: Make sure that no P-tags is added around shortcodes.
 		{
 			filepath.FromSlash("sect/doc2.md"),
 			fmt.Sprintf(`**Ref 1:**
 
-{{< %s "sect/doc1.md" >}}
+<a href="{{< %s "sect/doc1.md" >}}"></a>
 
 THE END.`, refShortcode),
 		},
 		// Issue #1753: Should not add a trailing newline after shortcode.
 		{
 			filepath.FromSlash("sect/doc3.md"),
-			fmt.Sprintf(`**Ref 1:**{{< %s "sect/doc3.md" >}}.`, refShortcode),
+			fmt.Sprintf(`**Ref 1:**<a href="{{< %s "sect/doc3.md" >}}">link</a>.`, refShortcode),
 		},
 		// Issue #3703
 		{
 			filepath.FromSlash("sect/doc4.md"),
-			fmt.Sprintf(`**Ref 1:**{{< %s "%s" >}}.`, refShortcode, doc3Slashed),
+			fmt.Sprintf(`**Ref 1:**<a href="{{< %s "%s" >}}">link</a>.`, refShortcode, doc3Slashed),
 		},
 	}
 
@@ -263,10 +263,10 @@ THE END.`, refShortcode),
 		doc      string
 		expected string
 	}{
-		{filepath.FromSlash(fmt.Sprintf("public/sect/doc1%s", expectedPathSuffix)), fmt.Sprintf("<p>Ref 2: %s/sect/doc2%s</p>\n", expectedBase, expectedURLSuffix)},
-		{filepath.FromSlash(fmt.Sprintf("public/sect/doc2%s", expectedPathSuffix)), fmt.Sprintf("<p><strong>Ref 1:</strong></p>\n\n%s/sect/doc1%s\n\n<p>THE END.</p>\n", expectedBase, expectedURLSuffix)},
-		{filepath.FromSlash(fmt.Sprintf("public/sect/doc3%s", expectedPathSuffix)), fmt.Sprintf("<p><strong>Ref 1:</strong>%s/sect/doc3%s.</p>\n", expectedBase, expectedURLSuffix)},
-		{filepath.FromSlash(fmt.Sprintf("public/sect/doc4%s", expectedPathSuffix)), fmt.Sprintf("<p><strong>Ref 1:</strong>%s/sect/doc3%s.</p>\n", expectedBase, expectedURLSuffix)},
+		{filepath.FromSlash(fmt.Sprintf("public/sect/doc1%s", expectedPathSuffix)), fmt.Sprintf("<p>Ref 2: <a href=\"%s/sect/doc2%s\">link</a></p>\n", expectedBase, expectedURLSuffix)},
+		{filepath.FromSlash(fmt.Sprintf("public/sect/doc2%s", expectedPathSuffix)), fmt.Sprintf("<p><strong>Ref 1:</strong></p>\n\n<p><a href=\"%s/sect/doc1%s\"></a></p>\n\n<p>THE END.</p>\n", expectedBase, expectedURLSuffix)},
+		{filepath.FromSlash(fmt.Sprintf("public/sect/doc3%s", expectedPathSuffix)), fmt.Sprintf("<p><strong>Ref 1:</strong><a href=\"%s/sect/doc3%s\">link</a>.</p>\n", expectedBase, expectedURLSuffix)},
+		{filepath.FromSlash(fmt.Sprintf("public/sect/doc4%s", expectedPathSuffix)), fmt.Sprintf("<p><strong>Ref 1:</strong><a href=\"%s/sect/doc3%s\">link</a>.</p>\n", expectedBase, expectedURLSuffix)},
 	}
 
 	for _, test := range tests {
@@ -534,16 +534,24 @@ func TestAbsURLify(t *testing.T) {
 				{"public/sect/doc1.html", "<!doctype html><html><head></head><body><a href=\"#frag1\">link</a></body></html>"},
 			}
 
+			// THIS IS A HACK. Rewrite the test so that it specifies the correct expected
+			// result for each case.
+			// If canonify, we get an absolute-URL link.
+			// If !canonify, we get a path-absolute-URL link.
+			if !canonify {
+				if baseURL == "http://auth/bub" {
+					baseURL = "/bub"
+				} else {
+					baseURL = ""
+				}
+			}
+
 			for _, test := range tests {
 
 				expected := test.expected
 
 				if strings.Contains(expected, "%s") {
 					expected = fmt.Sprintf(expected, baseURL)
-				}
-
-				if !canonify {
-					expected = strings.Replace(expected, baseURL, "", -1)
 				}
 
 				th.assertFileContent(test.file, expected)

@@ -34,6 +34,10 @@ type Paths struct {
 	BaseURL
 
 	// If the baseURL contains a base path, e.g. https://example.com/docs, then "/docs" will be the BasePath.
+	// This only exists because BaseURL.Path() has a fatal bug - it returns "/" for "http://example.com/",
+	// and we want BasePath in that case to be "". This makes the code be fragile, because we don't have
+	// any way of preventing someone from calling BaseURL.Path() and using it incorrectly. The right
+	// answer is to fix BaseURL.Path(). Or, restore GetBasePath and make it be the accessor to basePath.
 	BasePath string
 
 	// Directories
@@ -189,15 +193,6 @@ func New(fs *hugofs.Fs, cfg config.Provider) (*Paths, error) {
 	p.PublishDir = absPublishDir
 
 	return p, nil
-}
-
-// GetBasePath returns any path element in baseURL if needed.
-func (p *Paths) GetBasePath(isRelativeURL bool) string {
-	if isRelativeURL && p.CanonifyURLs {
-		// The baseURL will be prepended later.
-		return ""
-	}
-	return p.BasePath
 }
 
 func (p *Paths) Lang() string {
