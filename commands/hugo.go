@@ -653,7 +653,7 @@ func (c *commandeer) rebuildSites(events []fsnotify.Event) error {
 			if langPath != "" {
 				langPath = langPath + "/"
 			}
-			home := c.hugo.PathSpec.PrependBasePath("/"+langPath, false)
+			home := c.hugo.PathSpec.PrependBasePath("/"+langPath)
 			visited[home] = true
 		}
 

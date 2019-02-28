@@ -121,6 +121,15 @@ func (ns *Namespace) Markdownify(s interface{}) (template.HTML, error) {
 		m = bytes.TrimSuffix(m, markdownTrimSuffix)
 	}
 
+	// TODO: fix any links that might be in this markdown. While this is
+	// unlikely, it's definitely possible - consider {{ .Summary | markdownify }}.
+	// At the moment, however, this can't be done without adjusting Deps to
+	// contain basePath. I think that change is warranted, but it needs
+	// discussion. In fact, I think that some template functions need access to
+	// to other things; high on that list is the outputFormat for the page
+	// being rendered.
+	//m = helpers.AdjustMarkupLinks(m, ns.basePath)
+
 	return template.HTML(m), nil
 }
 

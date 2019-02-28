@@ -1659,9 +1659,14 @@ func (s *Site) renderAndWriteXML(statCounter *uint64, name string, targetPath st
 		return err
 	}
 
+	// Make the rewrite path (see renderAndWritePage for more details).
+	// For XML, we always make URLs into absolute-URL links (as if "canonifyURLS" were true)
+	// unless "relativeURLs" is specified.
 	var path string
 	if s.Info.relativeURLs {
-		path = helpers.GetDottedRelativePath(targetPath)
+		path = filepath.ToSlash(targetPath)
+		path = strings.TrimPrefix(s.PathSpec.GetBasePath(), path)
+		path = helpers.GetDottedRelativePath(path)
 	} else {
 		s := s.PathSpec.BaseURL.String()
 		if !strings.HasSuffix(s, "/") {
@@ -1680,6 +1685,8 @@ func (s *Site) renderAndWriteXML(statCounter *uint64, name string, targetPath st
 		AbsURLPath:   path,
 	}
 
+	s.Log.DEBUG.Printf("publishing XML file=%s (fixup=%q) format=%s mediaType=%s\n",
+		pd.TargetPath, path, pd.OutputFormat.Name, pd.OutputFormat.MediaType)
 	return s.publisher.Publish(pd)
 
 }
@@ -1698,13 +1705,38 @@ func (s *Site) renderAndWritePage(statCounter *uint64, name string, targetPath s
 	}
 
 	isHTML := p.outputFormat.IsHTML
+	targetPath = filepath.ToSlash(targetPath)
+
+	// Make the rewrite path (used on HTML output only). We have already added BasePath
+	// in both content generation and template actions, so we have no site-absolute-URL
+	// links in the generated file, but this lets users force the use of relative or
+	// absolute URLs.
+	//
+	// If relativeURLs=true, turn non-absolute-URL links into path-relative-URL links.
+	//
+	// If canonifyURLs=true, turn path-absolute-URL links into absolute-URL links
+	// by prepending the scheme+host portion of baseURL
+	//
+	// As a reminder, the user by default thinks of links as either path-relative-URL
+	// or site-absolute-URL links. The latter term means a link that's relative to
+	// the base of the content or static directories; it's natural for the Hugo user to
+	// think that way, and it also means that baseURL can change without needing to
+	// go fix up content files. These are turned into path-absolute-URL links by
+	// markup postprocessing and template actions. Also, the "relative" template
+	// actions like relref or .RelPermalink are writing path-absolute-URL links.
+	//
+	// TODO:
+	// - allow adjusting site-pointing absolute-URL links into another form
+	// - allow turning path-relative-URL links into absolute-URL links
+	// - allow turning all links into path-absolute-URL links (sanitize)
+	// - make better relative paths (the current method makes poor relative paths)
 
 	var path string
-
 	if s.Info.relativeURLs {
-		path = helpers.GetDottedRelativePath(targetPath)
+		path = strings.TrimPrefix(s.PathSpec.GetBasePath(), targetPath)
+		path = helpers.GetDottedRelativePath(path)
 	} else if s.Info.canonifyURLs {
-		url := s.PathSpec.BaseURL.String()
+		url := s.PathSpec.BaseURL.HostURL()
 		if !strings.HasSuffix(url, "/") {
 			url += "/"
 		}
@@ -1719,9 +1751,7 @@ func (s *Site) renderAndWritePage(statCounter *uint64, name string, targetPath s
 	}
 
 	if isHTML {
-		if s.Info.relativeURLs || s.Info.canonifyURLs {
-			pd.AbsURLPath = path
-		}
+		pd.AbsURLPath = path
 
 		if s.running() && s.Cfg.GetBool("watch") && !s.Cfg.GetBool("disableLiveReload") {
 			pd.LiveReloadPort = s.Cfg.GetInt("liveReloadPort")
@@ -1734,6 +1764,8 @@ func (s *Site) renderAndWritePage(statCounter *uint64, name string, targetPath s
 
 	}
 
+	s.Log.DEBUG.Printf("publishing file=%s (fixup=%q) format=%s mediaType=%s\n",
+		pd.TargetPath, path, pd.OutputFormat.Name, pd.OutputFormat.MediaType)
 	return s.publisher.Publish(pd)
 }
 

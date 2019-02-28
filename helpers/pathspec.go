@@ -69,6 +69,9 @@ func NewPathSpecWithBaseBaseFsProvided(fs *hugofs.Fs, cfg config.Provider, baseB
 		ProcessingStats: NewProcessingStats(p.Lang()),
 	}
 
+	// Workaround for BaseURL.Path() telling us http://example.com/ is "/".
+	// Also note that BasePath does not have a trailing slash, regardless of
+	// what the user put in config.
 	basePath := ps.BaseURL.Path()
 	if basePath != "" && basePath != "/" {
 		ps.BasePath = basePath

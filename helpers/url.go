@@ -21,6 +21,8 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/purell"
+
+	jww "github.com/spf13/jwalterweatherman"
 )
 
 type pathBridge struct {
@@ -283,16 +285,20 @@ func AddContextRoot(baseURL, relativePath string) string {
 }
 
 // PrependBasePath prepends any baseURL sub-folder to the given resource
-func (p *PathSpec) PrependBasePath(rel string, isAbs bool) string {
-	basePath := p.GetBasePath(!isAbs)
+func (p *PathSpec) PrependBasePath(rel string) string {
+	basePath := p.GetBasePath()
 	if basePath != "" {
+		// TODO- remove this when all Hugo paths are normalized to slash form.
 		rel = filepath.ToSlash(rel)
-		// Need to prepend any path from the baseURL
+		// path.Join will remove any trailing slash, so we need to keep a note.
 		hadSlash := strings.HasSuffix(rel, "/")
 		rel = path.Join(basePath, rel)
 		if hadSlash {
 			rel += "/"
 		}
+	}
+	if !strings.HasPrefix(rel, "/") && !strings.HasPrefix(rel, "\\"){
+		jww.ERROR.Printf("PrependBasePath expects site-absolute-URL: %s\n", rel)
 	}
 	return rel
 }

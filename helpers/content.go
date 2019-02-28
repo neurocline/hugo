@@ -31,6 +31,8 @@ import (
 	"github.com/chaseadamsio/goorgeous"
 	bp "github.com/gohugoio/hugo/bufferpool"
 	"github.com/gohugoio/hugo/config"
+	"github.com/gohugoio/hugo/transform"
+	"github.com/gohugoio/hugo/transform/urlreplacers"
 	"github.com/miekg/mmark"
 	"github.com/mitchellh/mapstructure"
 	"github.com/russross/blackfriday"
@@ -463,26 +465,63 @@ type RenderingContext struct {
 	Config       *BlackFriday
 	RenderTOC    bool
 	Cfg          config.Provider
+	BasePath     string
 }
 
 // RenderBytes renders a []byte.
 func (c ContentSpec) RenderBytes(ctx *RenderingContext) []byte {
+	var content []byte
 	switch ctx.PageFmt {
 	default:
-		return c.markdownRender(ctx)
+		content = c.markdownRender(ctx)
 	case "markdown":
-		return c.markdownRender(ctx)
+		content = c.markdownRender(ctx)
 	case "asciidoc":
-		return getAsciidocContent(ctx)
+		content = getAsciidocContent(ctx)
 	case "mmark":
-		return c.mmarkRender(ctx)
+		content = c.mmarkRender(ctx)
 	case "rst":
-		return getRstContent(ctx)
+		content = getRstContent(ctx)
 	case "org":
-		return orgRender(ctx, c)
+		content = orgRender(ctx, c)
 	case "pandoc":
-		return getPandocContent(ctx)
+		content = getPandocContent(ctx)
 	}
+
+	content = AdjustMarkupLinks(content, ctx.BasePath)
+	return content
+}
+
+// fixPaths turns site-absolute-URL links into path-absolute-URL-links
+// (markup processors don't know about basePath, the path component of baseURL)
+// Fixup for pages moving in the hierarchy (e.g. "pretty urls") is done at
+// a higher level.
+func AdjustMarkupLinks(content []byte, basePath string) []byte {
+	if basePath == "" {
+		return content
+	}
+
+	source := bytes.NewReader(content)
+
+	transformers := transform.NewEmpty()
+	transformers = append(transformers, urlreplacers.NewAbsURLTransformer(basePath))
+	work := bp.GetBuffer()
+	defer bp.PutBuffer(work)
+
+	if err := transformers.Apply(work, source); err != nil {
+		jww.ERROR.Printf("AdjustMarkupLinks: error transforming buffer: %s\n", err)
+		// We can't return an error, so we just return the unmodified content
+		return content
+	}
+
+	// We have transformed content, copy it from the to-be-recycled buffer.
+	// Just doing work.Bytes() isn't safe, because work will be recycled on scope exit.
+	// Reuse the existing slice if possible.
+	// TODO not a Go guru yet, so this might not be optimal, but it feels like it.
+	content = content[:0]
+	content = append(content, work.Bytes()...)
+
+	return content
 }
 
 // TotalWords counts instance of one or more consecutive white space

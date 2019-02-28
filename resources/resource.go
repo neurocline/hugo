@@ -614,7 +614,7 @@ func (l *genericResource) relTargetPathForRelAndBasePath(rel, basePath string, i
 	}
 
 	if isURL {
-		bp := l.spec.PathSpec.GetBasePath(!isAbs)
+		bp := l.spec.PathSpec.GetBasePath()
 		if bp != "" {
 			rel = path.Join(bp, rel)
 		}

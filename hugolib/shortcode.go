@@ -431,7 +431,8 @@ func renderShortcode(
 				Cfg:          p.Language(),
 				DocumentID:   p.UniqueID(),
 				DocumentName: p.Path(),
-				Config:       p.getRenderingConfig()})
+				Config:       p.getRenderingConfig(),
+				BasePath:     p.s.PathSpec.GetBasePath()})
 
 			// If the type is “unknown” or “markdown”, we assume the markdown
 			// generation has been performed. Given the input: `a line`, markdown
