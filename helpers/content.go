@@ -467,25 +467,22 @@ type RenderingContext struct {
 
 // RenderBytes renders a []byte.
 func (c ContentSpec) RenderBytes(ctx *RenderingContext) []byte {
-	var content []byte
 	switch ctx.PageFmt {
 	default:
-		content = c.markdownRender(ctx)
+		return c.markdownRender(ctx)
 	case "markdown":
-		content = c.markdownRender(ctx)
+		return c.markdownRender(ctx)
 	case "asciidoc":
-		content = getAsciidocContent(ctx)
+		return getAsciidocContent(ctx)
 	case "mmark":
-		content = c.mmarkRender(ctx)
+		return c.mmarkRender(ctx)
 	case "rst":
-		content = getRstContent(ctx)
+		return getRstContent(ctx)
 	case "org":
-		content = orgRender(ctx, c)
+		return orgRender(ctx, c)
 	case "pandoc":
-		content = getPandocContent(ctx)
+		return getPandocContent(ctx)
 	}
-
-	return content
 }
 
 // TotalWords counts instance of one or more consecutive white space
