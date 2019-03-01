@@ -20,9 +20,12 @@ import (
 	"html/template"
 
 	"github.com/gohugoio/hugo/cache/namedmemcache"
-
 	"github.com/gohugoio/hugo/deps"
 	"github.com/gohugoio/hugo/helpers"
+
+	// See comment in Markdownify
+	//"github.com/gohugoio/hugo/transform/urlreplacers"
+
 	"github.com/spf13/cast"
 )
 
@@ -121,14 +124,18 @@ func (ns *Namespace) Markdownify(s interface{}) (template.HTML, error) {
 		m = bytes.TrimSuffix(m, markdownTrimSuffix)
 	}
 
-	// TODO: fix any links that might be in this markdown. While this is
-	// unlikely, it's definitely possible - consider {{ .Summary | markdownify }}.
-	// At the moment, however, this can't be done without adjusting Deps to
-	// contain basePath. I think that change is warranted, but it needs
-	// discussion. In fact, I think that some template functions need access to
-	// to other things; high on that list is the outputFormat for the page
-	// being rendered.
-	//m = helpers.AdjustMarkupLinks(m, ns.basePath)
+	// If we have a path in our baseURL, then markup gave us site-absolute-URL
+	// links, and we need them to be path-absolute-URL links.
+	//
+	// TODO: We really should call urlreplacers.ConvertSiteToPathAbs here,
+	// but we can't, because we don't have access to BasePath. That would
+	// require a big change, either adding BasePath to Deps, or something
+	// bigger. And it should be something bigger, because template functions
+	// really need access to outputFormat, at the least.
+	//
+	//if p.s.PathSpec.GetBasePath() != "" {
+	//	m = urlreplacers.ConvertSiteToPathAbs(m, ns.basePath)
+	//}
 
 	return template.HTML(m), nil
 }

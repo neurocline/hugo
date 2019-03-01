@@ -18,32 +18,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"math/rand"
-	"reflect"
-
-	"github.com/gohugoio/hugo/common/hugo"
-
-	"github.com/gohugoio/hugo/common/maps"
-	"github.com/gohugoio/hugo/common/urls"
-	"github.com/gohugoio/hugo/media"
-
-	"github.com/gohugoio/hugo/langs"
-
-	"github.com/gohugoio/hugo/related"
-
-	"github.com/bep/gitmap"
-
-	"github.com/gohugoio/hugo/helpers"
-	"github.com/gohugoio/hugo/hugolib/pagemeta"
-	"github.com/gohugoio/hugo/resources/resource"
-
-	"github.com/gohugoio/hugo/output"
-	"github.com/mitchellh/mapstructure"
-
 	"html/template"
 	"io"
+	"math/rand"
 	"path"
 	"path/filepath"
+	"reflect"
 	"regexp"
 	"runtime"
 	"strings"
@@ -51,8 +31,22 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"github.com/gohugoio/hugo/common/hugo"
+	"github.com/gohugoio/hugo/common/maps"
+	"github.com/gohugoio/hugo/common/urls"
 	"github.com/gohugoio/hugo/compare"
+	"github.com/gohugoio/hugo/helpers"
+	"github.com/gohugoio/hugo/hugolib/pagemeta"
+	"github.com/gohugoio/hugo/langs"
+	"github.com/gohugoio/hugo/media"
+	"github.com/gohugoio/hugo/output"
+	"github.com/gohugoio/hugo/related"
+	"github.com/gohugoio/hugo/resources/resource"
 	"github.com/gohugoio/hugo/source"
+	"github.com/gohugoio/hugo/transform/urlreplacers"
+
+	"github.com/bep/gitmap"
+	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/cast"
 )
 
@@ -827,15 +821,21 @@ func (p *Page) setAutoSummary() error {
 
 func (p *Page) renderContent(content []byte) []byte {
 	p.s.Log.DEBUG.Printf("Render %s in content/%s\n", p.Markup, p.Path())
-	return p.s.ContentSpec.RenderBytes(&helpers.RenderingContext{
+	output := p.s.ContentSpec.RenderBytes(&helpers.RenderingContext{
 		Content: content,
 		RenderTOC: true,
 		PageFmt: p.Markup,
 		Cfg: p.Language(),
 		DocumentID: p.UniqueID(),
 		DocumentName: p.Path(),
-		Config: p.getRenderingConfig(),
-		BasePath: p.s.PathSpec.GetBasePath()})
+		Config: p.getRenderingConfig()})
+
+	// If we have a path in our baseURL, then markup gave us site-absolute-URL
+	// links, and we need them to be path-absolute-URL links.
+	if p.s.PathSpec.GetBasePath() != "" {
+		output = urlreplacers.ConvertSiteToPathAbs(output, p.s.PathSpec.GetBasePath())
+	}
+	return output
 }
 
 func (p *Page) getRenderingConfig() *helpers.BlackFriday {

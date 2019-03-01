@@ -14,12 +14,12 @@
 package urlreplacers
 
 import (
-	"path/filepath"
+	//"path/filepath"
 	"testing"
 
 	bp "github.com/gohugoio/hugo/bufferpool"
 
-	"github.com/gohugoio/hugo/helpers"
+	//"github.com/gohugoio/hugo/helpers"
 	"github.com/gohugoio/hugo/transform"
 )
 
@@ -171,12 +171,12 @@ func TestAbsURLUnqoted(t *testing.T) {
 	})
 }
 
-func TestRelativeURL(t *testing.T) {
-	tr := transform.New(NewAbsURLTransformer(helpers.GetDottedRelativePath(filepath.FromSlash("/post/sub/"))))
-
-	applyWithPath(t.Errorf, tr, relurlTests)
-
-}
+//func TestRelativeURL(t *testing.T) {
+//	tr := transform.New(NewAbsURLTransformer(helpers.GetDottedRelativePath(filepath.FromSlash("/post/sub/"))))
+//
+//	applyWithPath(t.Errorf, tr, relurlTests)
+//
+//}
 
 func TestAbsURLSrcSet(t *testing.T) {
 	tr := transform.New(NewAbsURLTransformer(testBaseURL))

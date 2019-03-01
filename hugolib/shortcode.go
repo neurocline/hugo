@@ -19,31 +19,25 @@ import (
 	"fmt"
 	"html/template"
 	"path"
-
-	"github.com/gohugoio/hugo/common/herrors"
-
 	"reflect"
-
 	"regexp"
 	"sort"
-
-	"github.com/gohugoio/hugo/parser/pageparser"
-
-	_errors "github.com/pkg/errors"
-
 	"strings"
 	"sync"
 
+	bp "github.com/gohugoio/hugo/bufferpool"
+	"github.com/gohugoio/hugo/common/herrors"
 	"github.com/gohugoio/hugo/common/maps"
 	"github.com/gohugoio/hugo/common/text"
 	"github.com/gohugoio/hugo/common/urls"
-	"github.com/gohugoio/hugo/output"
-
-	"github.com/gohugoio/hugo/media"
-
-	bp "github.com/gohugoio/hugo/bufferpool"
 	"github.com/gohugoio/hugo/helpers"
+	"github.com/gohugoio/hugo/media"
+	"github.com/gohugoio/hugo/output"
+	"github.com/gohugoio/hugo/parser/pageparser"
 	"github.com/gohugoio/hugo/tpl"
+	"github.com/gohugoio/hugo/transform/urlreplacers"
+
+	_errors "github.com/pkg/errors"
 )
 
 var (
@@ -431,8 +425,13 @@ func renderShortcode(
 				Cfg:          p.Language(),
 				DocumentID:   p.UniqueID(),
 				DocumentName: p.Path(),
-				Config:       p.getRenderingConfig(),
-				BasePath:     p.s.PathSpec.GetBasePath()})
+				Config:       p.getRenderingConfig()})
+
+			// If we have a path in our baseURL, then markup gave us site-absolute-URL
+			// links, and we need them to be path-absolute-URL links.
+			if p.s.PathSpec.GetBasePath() != "" {
+				newInner = urlreplacers.ConvertSiteToPathAbs(newInner, p.s.PathSpec.GetBasePath())
+			}
 
 			// If the type is “unknown” or “markdown”, we assume the markdown
 			// generation has been performed. Given the input: `a line`, markdown
