@@ -39,7 +39,7 @@ import (
 	"github.com/gohugoio/hugo/common/hugo"
 	"github.com/gohugoio/hugo/common/maps"
 	"github.com/gohugoio/hugo/publisher"
-//	"github.com/gohugoio/hugo/transform/urlreplacers"
+	"github.com/gohugoio/hugo/transform/urlreplacers"
 	_errors "github.com/pkg/errors"
 
 	"github.com/gohugoio/hugo/langs"
@@ -1751,22 +1751,22 @@ func (s *Site) renderAndWritePage(statCounter *uint64, name string, targetPath s
 		OutputFormat: p.outputFormat,
 	}
 
-//	if isHTML {
-//		pd.BaseURL = s.PathSpec.BaseURL.HostURL() // host ending in "/"
-//		if !strings.HasSuffix(pd.BaseURL, "/") {
-//			pd.BaseURL += "/"
-//		}
-//		pd.BasePath = s.PathSpec.GetBasePath() // this doesn't start or end with a "/"
-//		pd.TargetPath = filepath.ToSlash(targetPath)
-//
-//		if s.Info.relativeURLs {
-//			path = ""
-//			pd.RewriteURLTo = urlreplacers.PathRelativeURL
-//		} else if s.Info.canonifyURLs {
-//			path = ""
-//			pd.RewriteURLTo = urlreplacers.AbsoluteURL
-//		}
-//	}
+	if isHTML {
+		pd.BaseURL = s.PathSpec.BaseURL.HostURL() // host ending in "/"
+		if !strings.HasSuffix(pd.BaseURL, "/") {
+			pd.BaseURL += "/"
+		}
+		pd.BasePath = s.PathSpec.GetBasePath() // this doesn't start or end with a "/"
+		pd.TargetPath = filepath.ToSlash(targetPath)
+
+		if s.Info.relativeURLs {
+			path = ""
+			pd.RewriteURLTo = urlreplacers.PathRelativeURL
+		} else if s.Info.canonifyURLs {
+			path = ""
+			pd.RewriteURLTo = urlreplacers.AbsoluteURL
+		}
+	}
 
 	if isHTML {
 		pd.AbsURLPath = path

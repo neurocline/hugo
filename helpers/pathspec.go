@@ -20,6 +20,8 @@ import (
 	"github.com/gohugoio/hugo/hugofs"
 	"github.com/gohugoio/hugo/hugolib/filesystems"
 	"github.com/gohugoio/hugo/hugolib/paths"
+
+	jww "github.com/spf13/jwalterweatherman"
 )
 
 // PathSpec holds methods that decides how paths in URLs and files in Hugo should look like.
@@ -70,12 +72,15 @@ func NewPathSpecWithBaseBaseFsProvided(fs *hugofs.Fs, cfg config.Provider, baseB
 	}
 
 	// Workaround for BaseURL.Path() telling us http://example.com/ is "/".
-	// Also note that BasePath does not have a trailing slash, regardless of
-	// what the user put in config.
+	// BasePath is either the empty string "" or it starts with a slash (and
+	// ends with a slash if that's what the user has for baseURL in config).
+	// TBD - we should probably ensure one case or the other right here, rather
+	// than forcing code to do this individually.
 	basePath := ps.BaseURL.Path()
 	if basePath != "" && basePath != "/" {
 		ps.BasePath = basePath
 	}
+	jww.WARN.Printf("URL=%q BasePath=%q\n", ps.BaseURL.String(), ps.BasePath)
 
 	return ps, nil
 }

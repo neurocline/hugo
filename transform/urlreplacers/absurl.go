@@ -36,24 +36,24 @@ func NewAbsURLInXMLTransformer(path string) transform.Transformer {
 }
 
 // The URL types we support.
-//type URLKind int
-//
-//const (
-//    UnchangedURL URLKind = iota
-//
-//    AbsoluteURL
-//    PathAbsoluteURL // URLs are by default in this form already
-//    SiteAbsoluteURL // this isn't supported
-//    PathRelativeURL
-//)
-//
-//var ar2 = newURLReplacer()
-//
-//// NewURLTransformer changes URLs to the specified kind, which
-//// is one of: absolute-URL, path-absolute-URL, path-relative-URL
-//func NewURLTransformer(kind URLKind, targetPath string, baseURL string, basePath string) transform.Transformer {
-//    return func(ft transform.FromTo) error {
-//        ar2.replaceInHTML(kind, targetPath, baseURL, basePath, ft)
-//        return nil
-//    }
-//}
+type URLKind int
+
+const (
+    UnchangedURL URLKind = iota
+
+    AbsoluteURL
+    PathAbsoluteURL // URLs are by default in this form already
+    SiteAbsoluteURL // this isn't supported
+    PathRelativeURL
+)
+
+var ar2 = newURLReplacer()
+
+// NewURLTransformer changes URLs to the specified kind, which
+// is one of: absolute-URL, path-absolute-URL, path-relative-URL
+func NewURLTransformer(kind URLKind, targetPath string, baseURL string, basePath string) transform.Transformer {
+    return func(ft transform.FromTo) error {
+        ar2.replaceInHTML(kind, targetPath, baseURL, basePath, ft)
+        return nil
+    }
+}
