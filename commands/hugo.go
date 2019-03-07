@@ -126,40 +126,82 @@ func initializeConfig(mustHaveConfigFile, running bool,
 
 }
 
+// createLogger creates console and file loggers, respecting command-line options
+// and vars. The --quiet option overrides --verbose for more consistent behavior.
 func (c *commandeer) createLogger(cfg config.Provider, running bool) (*loggers.Logger, error) {
-	var (
-		logHandle       = ioutil.Discard
-		logThreshold    = jww.LevelWarn
-		logFile         = cfg.GetString("logFile")
-		outHandle       = os.Stdout
-		stdoutThreshold = jww.LevelWarn
-	)
+
+	// Set up console logging
+	var stdoutThreshold = jww.LevelWarn
+	var outHandle = os.Stdout
+
+	if c.h.quiet {
+		// --quiet takes precedence over everything else
+		stdoutThreshold = jww.LevelError
+	} else {
+		// If --verbose=<leveL>, then update console output level.
+		// (this overrides previous discrete settings)
+		vval := strings.ToLower(c.h.verboseVal)
+		switch vval {
+		case "trace":
+			stdoutThreshold = jww.LevelTrace
+		case "debug":
+			stdoutThreshold = jww.LevelDebug
+		case "info":
+			stdoutThreshold = jww.LevelInfo
+		case "warn":
+			stdoutThreshold = jww.LevelWarn
+		default:
+			if cfg.GetBool("debug") {
+				// --debug is lower than --verbose=LEVEL but higher than
+				// everything else
+				stdoutThreshold = jww.LevelDebug
+			} else if c.h.verbose {
+				// --verbose with no level is still INFO logging
+				stdoutThreshold = jww.LevelInfo
+			}
+		}
+	}
+
+	// Set up file logging
+	var logThreshold = jww.LevelWarn
+	var logHandle = ioutil.Discard
 
 	if c.h.verboseLog || c.h.logging || (c.h.logFile != "") {
 		var err error
+		var logFile = cfg.GetString("logFile")
+
 		if logFile != "" {
+			// User-specified log file
 			logHandle, err = os.OpenFile(logFile, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
 			if err != nil {
 				return nil, newSystemError("Failed to open log file:", logFile, err)
 			}
 		} else {
+			// The user didn't specify a log file, so log to a file in the hugo temp dir
 			logHandle, err = ioutil.TempFile("", "hugo")
 			if err != nil {
 				return nil, newSystemError(err)
 			}
 		}
-	} else if !c.h.quiet && cfg.GetBool("verbose") {
-		stdoutThreshold = jww.LevelInfo
-	}
 
-	if cfg.GetBool("debug") {
-		stdoutThreshold = jww.LevelDebug
-	}
-
-	if c.h.verboseLog {
-		logThreshold = jww.LevelInfo
-		if cfg.GetBool("debug") {
+		// Set the log level
+		vval := strings.ToLower(c.h.loggingVal)
+		switch vval {
+		case "trace":
+			logThreshold = jww.LevelTrace
+		case "debug":
 			logThreshold = jww.LevelDebug
+		case "info":
+			logThreshold = jww.LevelInfo
+		case "warn":
+			logThreshold = jww.LevelWarn
+		default:
+			if c.h.verboseLog {
+				logThreshold = jww.LevelInfo
+				if cfg.GetBool("debug") {
+					logThreshold = jww.LevelDebug
+				}
+			}
 		}
 	}
 
