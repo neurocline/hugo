@@ -31,6 +31,11 @@ type absurllexer struct {
 	// path may be set to a "." relative path
 	path []byte
 
+//	kind URLKind
+//	targetPath []byte // path to the file being scanned
+//	baseURL []byte
+//	basePath []byte
+
 	pos   int // input position
 	start int // item start position
 
@@ -53,10 +58,10 @@ func newPrefixState() []*prefix {
 	}
 }
 
-type absURLMatcher struct {
-	match []byte
-	quote []byte
-}
+//type absURLMatcher struct {
+//	match []byte
+//	quote []byte
+//}
 
 func (l *absurllexer) emit() {
 	l.w.Write(l.content[l.start:l.pos])
@@ -82,6 +87,8 @@ func (l *absurllexer) consumeQuote() []byte {
 // handle URLs in src and href.
 func checkCandidateBase(l *absurllexer) {
 	l.consumeQuote()
+//	quotedStart := l.pos // start of path inside quotes
+//	quoteChar := l.content[l.pos-1:l.pos]
 
 	if !bytes.HasPrefix(l.content[l.pos:], relURLPrefix) {
 		return
@@ -100,6 +107,72 @@ func checkCandidateBase(l *absurllexer) {
 	if l.pos > l.start {
 		l.emit()
 	}
+
+	// If we are really handling relative URLs properly, then we have to get
+	// the link, so we can adjust it relative to this file.
+//	if l.kind == PathRelativeURL {
+//		// TBD handle malformed text, this will eat up the whole file
+//		for l.pos < len(l.content) && l.content[l.pos] != quoteChar[0] {
+//			l.pos++
+//		}
+//		if l.pos == len(l.content) {
+//			return
+//		}
+//
+//		link := make([]byte, l.pos - quotedStart)
+//		copy(link, l.content[quotedStart:l.pos])
+//		l.pos += 1
+//
+//		// If we have a path-absolute link, then make it relative.
+//		// Ignore other links for now.
+//		if link[0] == '/' {
+//			// Make targetPath be path-absolute (it was missing basePath)
+//			target := make([]byte, len(l.basePath) + 1 + len(l.targetPath))
+//			copy(target, l.basePath)
+//			target = append(target, '/')
+//			target = append(target, l.targetPath...)
+//
+//			// Remove the common prefix of link and target
+//			n := len(link)
+//			if n > len(target) {
+//				n = len(target)
+//			}
+//			i := 0
+//			for ; i < n; i++ {
+//				if link[i] != target[i] {
+//					break
+//				}
+//			}
+//			link = link[:i]
+//			target = target[:i]
+//
+//			// For each directory left in target, prepend "../" to link
+//			for {
+//				pos := bytes.LastIndexByte(target, '/')
+//				if pos == -1 {
+//					break
+//				}
+//				link = append([]byte("../"), link...)
+//				target = target[:pos]
+//			}
+//
+//			// Now write out the new link, properly quoted
+//			l.w.Write(quoteChar)
+//			l.w.Write(link)
+//			l.w.Write(quoteChar)
+//			l.start = l.pos
+//		}
+//
+//		// Emit any pending bytes (only for unhandled cases, and we probably don't
+//		// need to do this, it's done in the outer loop too).
+//		if l.pos > l.start {
+//			l.emit()
+//		}
+//
+//		return
+//	}
+
+	// Old method
 	l.pos += relURLPrefixLen
 	l.w.Write(l.path)
 	l.start = l.pos
@@ -231,6 +304,20 @@ func doReplace(path string, ct transform.FromTo, quotes [][]byte) {
 	lexer.replace()
 }
 
+//func doReplace2(kind URLKind, targetPath string, baseURL string, basePath string, ct transform.FromTo, quotes [][]byte) {
+//
+//	lexer := &absurllexer{
+//		content: ct.From().Bytes(),
+//		w:       ct.To(),
+//		kind:    kind,
+//		targetPath: []byte(targetPath),
+//		baseURL: []byte(baseURL),
+//		basePath: []byte(basePath),
+//		quotes:  quotes}
+//
+//	lexer.replace()
+//}
+
 type absURLReplacer struct {
 	htmlQuotes [][]byte
 	xmlQuotes  [][]byte
@@ -249,3 +336,18 @@ func (au *absURLReplacer) replaceInHTML(path string, ct transform.FromTo) {
 func (au *absURLReplacer) replaceInXML(path string, ct transform.FromTo) {
 	doReplace(path, ct, au.xmlQuotes)
 }
+
+//type urlReplacer struct {
+//	htmlQuotes [][]byte
+//	xmlQuotes  [][]byte
+//}
+//
+//func newURLReplacer() *urlReplacer {
+//	return &urlReplacer{
+//		htmlQuotes: [][]byte{[]byte("\""), []byte("'")},
+//		xmlQuotes:  [][]byte{[]byte("&#34;"), []byte("&#39;")}}
+//}
+//
+//func (au *urlReplacer) replaceInHTML(kind URLKind, targetPath string, baseURL string, basePath string, ct transform.FromTo) {
+//	doReplace2(kind, targetPath, baseURL, basePath, ct, au.htmlQuotes)
+//}

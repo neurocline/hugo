@@ -43,6 +43,7 @@ type Descriptor struct {
 	OutputFormat output.Format
 
 	// Where to publish this content. This is a filesystem-relative path.
+	// This does not contain BasePath from baseURL.
 	TargetPath string
 
 	// Counter for the end build summary.
@@ -58,6 +59,11 @@ type Descriptor struct {
 
 	// If set, will replace all relative URLs with this one.
 	AbsURLPath string
+
+	// Information for URL rewriting
+//	RewriteURLTo urlreplacers.URLKind // the kind of URL to rewrite links to
+//	BaseURL string // just the hostname
+//	BasePath string // just the path
 
 	// Enable to minify the output using the OutputFormat defined above to
 	// pick the correct minifier configuration.
@@ -129,6 +135,20 @@ func (p DestinationPublisher) createTransformerChain(f Descriptor) transform.Cha
 
 	isHTML := f.OutputFormat.IsHTML
 
+	// New path
+	//if isHTML {
+	//	if f.RewriteURLTo == urlreplacers.PathRelativeURL {
+	//		// Convert urls to site-relative-URLs
+	//		f.AbsURLPath = ""
+	//		transformers = append(transformers, urlreplacers.NewURLTransformer(urlreplacers.PathRelativeURL, f.TargetPath, f.BaseURL, f.BasePath))
+	//	} else if f.RewriteURLTo == urlreplacers.AbsoluteURL {
+	//		// Convert urls to absolute-URLs
+	//		f.AbsURLPath = ""
+	//		transformers = append(transformers, urlreplacers.NewURLTransformer(urlreplacers.AbsoluteURL, f.TargetPath, f.BaseURL, f.BasePath))
+	//	}
+	//}
+
+	// Old path for XML
 	if f.AbsURLPath != "" {
 		if isHTML {
 			transformers = append(transformers, urlreplacers.NewAbsURLTransformer(f.AbsURLPath))
