@@ -21,6 +21,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/purell"
+	jww "github.com/spf13/jwalterweatherman"
 )
 
 type pathBridge struct {
@@ -210,89 +211,99 @@ func IsAbsURL(path string) bool {
 	return url.IsAbs() || strings.HasPrefix(path, "//")
 }
 
-// RelURL creates a URL relative to the BaseURL root.
-// Note: The result URL will not include the context root if canonifyURLs is enabled.
+// RelURL creates a path-absolute-URL or an absolute-URL and turns it
+// into a path-absolute-URL with an optional language inserted between
+// the basePath and the rest of the link. The output path is as faithful
+// to the input path as possible.
+//
+// TODO - tpl/urls.RelUrl seems to think this will turn a path-relative
+// URL into a path-absolute-URL, but there's no way that can happen, as
+// we don't have access to the file that hosts this link. And that should
+// be done in tpl/urls.RelUrl anyway.
+// TODO - this code was written to satisfy the spec implied by the tests.
+// But that spec is probably wrong. Get agreement on this and then revisit.
 func (p *PathSpec) RelURL(in string, addLanguage bool) string {
+
+	// If this is a schemaless URL, or it's an http absolute-URL not pointing inside
+	// our side, there's nothing to do.
+	// TODO - this will break if we are handed URLs with other schemes
 	baseURL := p.BaseURL.String()
-	canonifyURLs := p.CanonifyURLs
 	if (!strings.HasPrefix(in, baseURL) && strings.HasPrefix(in, "http")) || strings.HasPrefix(in, "//") {
 		return in
 	}
 
-	u := in
-
-	if strings.HasPrefix(in, baseURL) {
-		u = strings.TrimPrefix(u, baseURL)
+	// Get a sanitized basePath - split off any trailing slash, because
+	// that will go after any language dir
+	basePath := p.GetBasePath()
+	var trailingSlash string
+	if strings.HasSuffix(basePath, "/") {
+		trailingSlash = "/"
+		basePath = basePath[:len(basePath)-1]
 	}
 
+	// Get the language prefix (if we are adding a langauge). We have one of
+	// no language: langPrefix=""
+	// language: langPrefix = "/" + lang
+	// This simplifies creating the path
+	var langPrefix string
 	if addLanguage {
-		prefix := p.GetLanguagePrefix()
-		if prefix != "" {
-			hasPrefix := false
-			// avoid adding language prefix if already present
-			if strings.HasPrefix(in, "/") {
-				hasPrefix = strings.HasPrefix(in[1:], prefix)
-			} else {
-				hasPrefix = strings.HasPrefix(in, prefix)
-			}
-
-			if !hasPrefix {
-				hadSlash := strings.HasSuffix(u, "/")
-
-				u = path.Join(prefix, u)
-
-				if hadSlash {
-					u += "/"
-				}
-			}
+		langPrefix = p.GetLanguagePrefix()
+		if langPrefix != "" {
+			langPrefix = "/" + langPrefix
 		}
 	}
 
-	if !canonifyURLs {
-		u = AddContextRoot(baseURL, u)
+	// If we were handed an empty input path, then just return a basepath
+	// (with any trailing slash after the language dir).
+	// TODO - this should probably be an error
+	if in == "" {
+		return basePath + langPrefix + trailingSlash
 	}
 
-	if in == "" && !strings.HasSuffix(u, "/") && strings.HasSuffix(baseURL, "/") {
-		u += "/"
+	// If we were handed an absolute-URL, then turn it into a site-absolute-URL
+	// (by stripping host+BasePath)
+	link := in
+	if strings.HasPrefix(link, baseURL) {
+		link = trailingSlash + strings.TrimPrefix(link, baseURL)
 	}
 
-	if !strings.HasPrefix(u, "/") {
-		u = "/" + u
+	// If we were handed a site-relative path, force it to be site-absolute
+	// (and note that this is a huge mistake, we are going to end up with
+	// a path that only works in one specific case, that of the user actually
+	// passing in a site-absolute path but omitting the leading slash - e.g.
+	// bad user input)
+	if !strings.HasPrefix(link, "/") {
+		link = "/" + link
 	}
 
-	return u
+	// If the input path has the language prefix, don't add it a second time
+	if langPrefix != "" && strings.HasPrefix(link[1:], langPrefix[1:]) {
+		langPrefix = ""
+	}
+
+	// Assemble it all together to make a path-absolute-URL with any
+	// desired language path following right after the BasePath portion
+	link = basePath + langPrefix + link
+
+	return link
 }
 
-// AddContextRoot adds the context root to an URL if it's not already set.
-// For relative URL entries on sites with a base url with a context root set (i.e. http://example.com/mysite),
-// relative URLs must not include the context root if canonifyURLs is enabled. But if it's disabled, it must be set.
-func AddContextRoot(baseURL, relativePath string) string {
-
-	url, err := url.Parse(baseURL)
-	if err != nil {
-		panic(err)
-	}
-
-	newPath := path.Join(url.Path, relativePath)
-
-	// path strips traling slash, ignore root path.
-	if newPath != "/" && strings.HasSuffix(relativePath, "/") {
-		newPath += "/"
-	}
-	return newPath
-}
-
-// PrependBasePath prepends any baseURL sub-folder to the given resource
-func (p *PathSpec) PrependBasePath(rel string, isAbs bool) string {
-	basePath := p.GetBasePath(!isAbs)
+// PrependBasePath prepends baseURL.BasePath to the given path
+// (input path is presumed to be a site-absolute-URL)
+func (p *PathSpec) PrependBasePath(rel string) string {
+	basePath := p.GetBasePath()
 	if basePath != "" {
+		// TODO- remove this when all Hugo paths are normalized to slash form.
 		rel = filepath.ToSlash(rel)
-		// Need to prepend any path from the baseURL
+		// path.Join will remove any trailing slash, so we need to keep a note.
 		hadSlash := strings.HasSuffix(rel, "/")
 		rel = path.Join(basePath, rel)
 		if hadSlash {
 			rel += "/"
 		}
+	}
+	if !strings.HasPrefix(rel, "/") && !strings.HasPrefix(rel, "\\") {
+		jww.ERROR.Printf("PrependBasePath expects site-absolute-URL: %s\n", rel)
 	}
 	return rel
 }

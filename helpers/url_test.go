@@ -138,6 +138,10 @@ func TestRelURL(t *testing.T) {
 	}
 }
 
+// The test cases here are testing things that shouldn't really be tested (calling relURL
+// on an empty string is nearly meaningless), testing things that shouldn't be allowed
+// (RelUrl as written doesn't actually work with path-relative-URLs as input), and
+// missing things that should be tested (passing absolute-URLs is conspicuously not tested).
 func doTestRelURL(t *testing.T, defaultInSubDir, addLanguage, multilingual bool, lang string) {
 	v := newTestCfg()
 	v.Set("multilingual", multilingual)
@@ -154,10 +158,10 @@ func doTestRelURL(t *testing.T, defaultInSubDir, addLanguage, multilingual bool,
 		{"/" + lang + "/test/foo", "http://base/", false, "/" + lang + "/test/foo"},
 		{lang + "/test/foo", "http://base/", false, "/" + lang + "/test/foo"},
 		{"test.css", "http://base/sub", false, "/subMULTI/test.css"},
-		{"test.css", "http://base/sub", true, "MULTI/test.css"},
+		{"test.css", "http://base/sub", true, "/subMULTI/test.css"},
 		{"/test/", "http://base/", false, "MULTI/test/"},
 		{"/test/", "http://base/sub/", false, "/subMULTI/test/"},
-		{"/test/", "http://base/sub/", true, "MULTI/test/"},
+		{"/test/", "http://base/sub/", true, "/subMULTI/test/"},
 		{"", "http://base/ace/", false, "/aceMULTI/"},
 		{"", "http://base/ace", false, "/aceMULTI"},
 		{"http://abs", "http://base/", false, "http://abs"},
@@ -184,7 +188,7 @@ func doTestRelURL(t *testing.T, defaultInSubDir, addLanguage, multilingual bool,
 		}
 
 		if output != expected {
-			t.Errorf("[%d][%t] Expected %#v, got %#v\n", i, test.canonify, expected, output)
+			t.Errorf("[%d][%t][%t][%s] Input %#v, expected %#v, got %#v\n", i, test.canonify, addLanguage, lang, test.input, expected, output)
 		}
 	}
 }
@@ -264,31 +268,6 @@ func TestURLPrep(t *testing.T) {
 		}
 	}
 
-}
-
-func TestAddContextRoot(t *testing.T) {
-	tests := []struct {
-		baseURL  string
-		url      string
-		expected string
-	}{
-		{"http://example.com/sub/", "/foo", "/sub/foo"},
-		{"http://example.com/sub/", "/foo/index.html", "/sub/foo/index.html"},
-		{"http://example.com/sub1/sub2", "/foo", "/sub1/sub2/foo"},
-		{"http://example.com", "/foo", "/foo"},
-		// cannot guess that the context root is already added int the example below
-		{"http://example.com/sub/", "/sub/foo", "/sub/sub/foo"},
-		{"http://example.com/тря", "/трям/", "/тря/трям/"},
-		{"http://example.com", "/", "/"},
-		{"http://example.com/bar", "//", "/bar/"},
-	}
-
-	for _, test := range tests {
-		output := AddContextRoot(test.baseURL, test.url)
-		if output != test.expected {
-			t.Errorf("Expected %#v, got %#v\n", test.expected, output)
-		}
-	}
 }
 
 func TestPretty(t *testing.T) {

@@ -28,6 +28,7 @@ import (
 	"sort"
 
 	"github.com/gohugoio/hugo/parser/pageparser"
+	"github.com/gohugoio/hugo/transform/urlreplacers"
 
 	_errors "github.com/pkg/errors"
 
@@ -432,6 +433,13 @@ func renderShortcode(
 				DocumentID:   p.UniqueID(),
 				DocumentName: p.Path(),
 				Config:       p.getRenderingConfig()})
+
+			// Markup rendering gave us site-absolute-URL links. If we have a path in our
+			// baseURL, we need to convert these to path-absolute-URL links to match what
+			// template actions are going to do.
+			if p.s.PathSpec.GetBasePath() != "" {
+				newInner = urlreplacers.SiteAbsToPathAbs(newInner, p.s.PathSpec.GetBasePath())
+			}
 
 			// If the type is “unknown” or “markdown”, we assume the markdown
 			// generation has been performed. Given the input: `a line`, markdown

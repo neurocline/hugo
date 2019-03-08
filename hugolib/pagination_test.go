@@ -17,7 +17,7 @@ import (
 	"fmt"
 	"html/template"
 	"path/filepath"
-	"strings"
+	//"strings"
 	"testing"
 
 	"github.com/gohugoio/hugo/deps"
@@ -234,9 +234,9 @@ func TestPaginationURLFactory(t *testing.T) {
 
 					expected := test.expected
 
-					if canonifyURLs {
-						expected = strings.Replace(expected, "/sub", "", 1)
-					}
+					//if canonifyURLs {
+					//	expected = strings.Replace(expected, "/sub", "", 1)
+					//}
 
 					if uglyURLs {
 						expected = expected[:len(expected)-1] + "." + test.d.Type.MediaType.Suffix()

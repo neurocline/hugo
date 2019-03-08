@@ -36,6 +36,7 @@ import (
 	"github.com/gohugoio/hugo/helpers"
 	"github.com/gohugoio/hugo/hugolib/pagemeta"
 	"github.com/gohugoio/hugo/resources/resource"
+	"github.com/gohugoio/hugo/transform/urlreplacers"
 
 	"github.com/gohugoio/hugo/output"
 	"github.com/mitchellh/mapstructure"
@@ -826,11 +827,20 @@ func (p *Page) setAutoSummary() error {
 }
 
 func (p *Page) renderContent(content []byte) []byte {
-	return p.s.ContentSpec.RenderBytes(&helpers.RenderingContext{
+	p.s.Log.DEBUG.Printf("Render %s in content/%s\n", p.Markup, filepath.ToSlash(p.Path()))
+	output := p.s.ContentSpec.RenderBytes(&helpers.RenderingContext{
 		Content: content, RenderTOC: true, PageFmt: p.Markup,
 		Cfg:        p.Language(),
 		DocumentID: p.UniqueID(), DocumentName: p.Path(),
 		Config: p.getRenderingConfig()})
+
+	// Markup rendering gave us site-absolute-URL links. If we have a path in our
+	// baseURL, we need to convert these to path-absolute-URL links to match what
+	// template actions are going to do.
+	if p.s.PathSpec.GetBasePath() != "" {
+		output = urlreplacers.SiteAbsToPathAbs(output, p.s.PathSpec.GetBasePath())
+	}
+	return output
 }
 
 func (p *Page) getRenderingConfig() *helpers.BlackFriday {

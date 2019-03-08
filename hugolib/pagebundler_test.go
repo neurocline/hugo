@@ -51,9 +51,9 @@ func TestPageBundlerSiteRegular(t *testing.T) {
 					func(t *testing.T) {
 						baseURL := baseBaseURL + baseURLPath
 						relURLBase := baseURLPath
-						if canonify {
-							relURLBase = ""
-						}
+						//if canonify {
+						//	relURLBase = ""
+						//}
 						assert := require.New(t)
 						fs, cfg := newTestBundleSources(t)
 						cfg.Set("baseURL", baseURL)
