@@ -169,10 +169,12 @@ Complete documentation is available at http://gohugo.io/.`,
 	// Set bash-completion
 	_ = cc.cmd.PersistentFlags().SetAnnotation("config", cobra.BashCompFilenameExt, config.ValidConfigFileExtensions)
 
-	cc.cmd.PersistentFlags().BoolVarP(&cc.verbose, "verbose", "v", false, "verbose output")
+	cc.cmd.PersistentFlags().StringVarP(&cc.verboseVal, "verbose", "v", "", "verbose output")
+	cc.cmd.PersistentFlags().Lookup("verbose").NoOptDefVal = "verbose"
 	cc.cmd.PersistentFlags().BoolVarP(&cc.debug, "debug", "", false, "debug output")
-	cc.cmd.PersistentFlags().BoolVar(&cc.logging, "log", false, "enable Logging")
-	cc.cmd.PersistentFlags().StringVar(&cc.logFile, "logFile", "", "log File path (if set, logging enabled automatically)")
+	cc.cmd.PersistentFlags().StringVar(&cc.loggingVal, "log", "", "enable logging")
+	cc.cmd.PersistentFlags().Lookup("log").NoOptDefVal = "log"
+	cc.cmd.PersistentFlags().StringVar(&cc.logFile, "logFile", "", "set log file path (will enable logging)")
 	cc.cmd.PersistentFlags().BoolVar(&cc.verboseLog, "verboseLog", false, "verbose logging")
 
 	cc.cmd.Flags().BoolVarP(&cc.buildWatch, "watch", "w", false, "watch filesystem for changes and recreate as needed")
@@ -198,6 +200,8 @@ type hugoBuilderCommon struct {
 	gc bool
 
 	// TODO(bep) var vs string
+	verboseVal string
+	loggingVal string
 	logging    bool
 	verbose    bool
 	verboseLog bool
