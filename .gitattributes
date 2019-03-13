@@ -3,6 +3,8 @@
 
 # Go source files always have LF line endings
 *.go text eol=lf
+go.mod text eol=lf
+go.sum text eol=lf
 
 # SVG files should not be modified
 *.svg -text
