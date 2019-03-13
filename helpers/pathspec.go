@@ -69,6 +69,13 @@ func NewPathSpecWithBaseBaseFsProvided(fs *hugofs.Fs, cfg config.Provider, baseB
 		ProcessingStats: NewProcessingStats(p.Lang()),
 	}
 
+	// Workaround for BaseURL.Path() telling us http://example.com/ is "/".
+	// We want BasePath="" if there is no path after the hostname, e.g.:
+	//   baseURL="http://example.com/""        => BasePath=""
+	//   baseURL="http://example.com/path/""   => BasePath="/path/"
+	// Note that BasePath will be as the user typed it - maybe we want to force
+	// a trailing slash here (or force it to be removed), so every user of this
+	// doesn't have to also sanitize it.
 	basePath := ps.BaseURL.Path()
 	if basePath != "" && basePath != "/" {
 		ps.BasePath = basePath

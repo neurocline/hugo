@@ -1368,7 +1368,6 @@ func (s *Site) buildSiteMeta() (err error) {
 }
 
 func (s *Site) getMenusFromConfig() Menus {
-
 	ret := Menus{}
 
 	if menus := s.Language.GetStringMap("menus"); menus != nil {
@@ -1411,9 +1410,8 @@ func (s *SiteInfo) createNodeMenuEntryURL(in string) string {
 	// make it match the nodes
 	menuEntryURL := in
 	menuEntryURL = helpers.SanitizeURLKeepTrailingSlash(s.s.PathSpec.URLize(menuEntryURL))
-	if !s.canonifyURLs {
-		menuEntryURL = helpers.AddContextRoot(s.s.PathSpec.BaseURL.String(), menuEntryURL)
-	}
+	menuEntryURL = s.s.PathSpec.PrependBasePath(menuEntryURL)
+	s.s.Log.INFO.Printf("menuEntryURL=%s\n", menuEntryURL)
 	return menuEntryURL
 }
 
@@ -1681,8 +1679,9 @@ func (s *Site) renderAndWriteXML(statCounter *uint64, name string, targetPath st
 		AbsURLPath:   path,
 	}
 
+	s.Log.DEBUG.Printf("publishing XML file=%s (fixup=%q) format=%s mediaType=%s\n",
+		pd.TargetPath, path, pd.OutputFormat.Name, pd.OutputFormat.MediaType)
 	return s.publisher.Publish(pd)
-
 }
 
 func (s *Site) renderAndWritePage(statCounter *uint64, name string, targetPath string, p *PageOutput, layouts ...string) error {
@@ -1699,17 +1698,43 @@ func (s *Site) renderAndWritePage(statCounter *uint64, name string, targetPath s
 	}
 
 	isHTML := p.outputFormat.IsHTML
+	targetPath = filepath.ToSlash(targetPath)
+
+	// Make the rewrite path (used on HTML output only). We have already added BasePath
+	// in both content generation and template actions, so we have no site-absolute-URL
+	// links in the generated file, but this lets users force the use of relative or
+	// absolute URLs.
+	//
+	// If relativeURLs=true, turn non-absolute-URL links into path-relative-URL links.
+	// (TBD - turn internal-facing absolute-URL links into path-relative-URL links).
+	//
+	// If canonifyURLs=true, turn path-absolute-URL links into absolute-URL links
+	// by prepending the scheme+host portion of baseURL
+	// (TBD - turn path-relative-URL links into path-absolute-URL links).
+	//
+	// As a reminder, the user by default thinks of links as either path-relative-URL
+	// or site-absolute-URL links. The latter term means a link that's relative to
+	// the base of the content or static directories; it's natural for the Hugo user to
+	// think that way, and it also means that baseURL can change without needing to
+	// go fix up content files. These are turned into path-absolute-URL links by
+	// markup postprocessing and template actions. Also, the "relative" template
+	// actions like relref or .RelPermalink are writing path-absolute-URL links.
+	//
+	// TODO:
+	// - allow adjusting site-pointing absolute-URL links into another form
+	// - allow turning path-relative-URL links into absolute-URL links
+	// - allow turning all links into path-absolute-URL links (sanitize)
+	// - make better relative paths (the current method makes poor relative paths)
 
 	var path string
 
 	if s.Info.relativeURLs {
 		path = helpers.GetDottedRelativePath(targetPath)
 	} else if s.Info.canonifyURLs {
-		url := s.PathSpec.BaseURL.String()
-		if !strings.HasSuffix(url, "/") {
-			url += "/"
+		path = s.PathSpec.BaseURL.HostURL()
+		if !strings.HasSuffix(path, "/") {
+			path += "/"
 		}
-		path = url
 	}
 
 	pd := publisher.Descriptor{
@@ -1720,9 +1745,7 @@ func (s *Site) renderAndWritePage(statCounter *uint64, name string, targetPath s
 	}
 
 	if isHTML {
-		if s.Info.relativeURLs || s.Info.canonifyURLs {
-			pd.AbsURLPath = path
-		}
+		pd.AbsURLPath = path
 
 		if s.running() && s.Cfg.GetBool("watch") && !s.Cfg.GetBool("disableLiveReload") {
 			pd.LiveReloadPort = s.Cfg.GetInt("liveReloadPort")
@@ -1735,6 +1758,8 @@ func (s *Site) renderAndWritePage(statCounter *uint64, name string, targetPath s
 
 	}
 
+	s.Log.DEBUG.Printf("publishing file=%s (fixup=%q) format=%s mediaType=%s\n",
+		pd.TargetPath, path, pd.OutputFormat.Name, pd.OutputFormat.MediaType)
 	return s.publisher.Publish(pd)
 }
 

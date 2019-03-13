@@ -121,6 +121,19 @@ func (ns *Namespace) Markdownify(s interface{}) (template.HTML, error) {
 		m = bytes.TrimSuffix(m, markdownTrimSuffix)
 	}
 
+	// If we have a path in our baseURL, then markup gave us site-absolute-URL
+	// links, and we need them to be path-absolute-URL links.
+	//
+	// TODO: We really should call urlreplacers.SiteAbsToPathAbs here,
+	// but we can't, because we don't have access to BasePath. That would
+	// require a change upstream, either adding BasePath to Deps, or something
+	// bigger. And it should be something bigger, because template functions
+	// really need access to outputFormat, at the least.
+	//
+	//if p.s.PathSpec.GetBasePath() != "" {
+	//	m = urlreplacers.SiteAbsToPathAbs(m, ns.basePath)
+	//}
+
 	return template.HTML(m), nil
 }
 

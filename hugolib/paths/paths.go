@@ -34,10 +34,15 @@ type Paths struct {
 	BaseURL
 
 	// If the baseURL contains a base path, e.g. https://example.com/docs, then "/docs" will be the BasePath.
+	// Note: this is a workaround for a defect in using BaseURL.Path() - if we
+	// have BaseURL="http://example.com/" (note trailing slash), then BaseURL.Path()
+	// will return "/", and we want it to be "". So we precompute the desired
+	// base path and then use Paths.GetBasePath() to fetch it. Ideally, we would fix
+	// BaseURL.Path() to give the right (for us) answer.
 	BasePath string
 
 	// Directories
-	// TODO(bep) when we have trimmed down mos of the dirs usage outside of this package, make
+	// TODO(bep) when we have trimmed down most of the dirs usage outside of this package, make
 	// these into an interface.
 	ContentDir string
 	ThemesDir  string
@@ -191,12 +196,10 @@ func New(fs *hugofs.Fs, cfg config.Provider) (*Paths, error) {
 	return p, nil
 }
 
-// GetBasePath returns any path element in baseURL if needed.
-func (p *Paths) GetBasePath(isRelativeURL bool) string {
-	if isRelativeURL && p.CanonifyURLs {
-		// The baseURL will be prepended later.
-		return ""
-	}
+// GetBasePath returns the path element in baseURL if it exists.
+// This only exists because p.BaseURL.Path() is broken, e.g. it
+// will return "/" instead of "" for empty path if we have http://example.com/
+func (p *Paths) GetBasePath() string {
 	return p.BasePath
 }
 
