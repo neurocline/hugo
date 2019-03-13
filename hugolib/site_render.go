@@ -17,6 +17,7 @@ import (
 	"fmt"
 	"path"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 
@@ -35,7 +36,16 @@ func (s *Site) renderPages(cfg *BuildCfg) error {
 
 	go s.errorCollator(results, errs)
 
-	numWorkers := getGoMaxProcs() * 4
+	// Either manually specified number of workers, or 2*logicalcpus
+	// with a minimum of 4
+	numWorkers := s.Cfg.GetInt("workers")
+	if numWorkers == 0 {
+		numWorkers = 4
+		if n := runtime.NumCPU() * 2; n > numWorkers {
+			numWorkers = n
+		}
+	}
+	s.Log.INFO.Printf("Using %d workers in renderPages\n", numWorkers)
 
 	wg := &sync.WaitGroup{}
 

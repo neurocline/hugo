@@ -94,7 +94,7 @@ func TestPageBundlerCaptureSymlinks(t *testing.T) {
 
 	fileStore := &storeFilenames{}
 	logger := loggers.NewErrorLogger()
-	c := newCapturer(logger, sourceSpec, fileStore, nil)
+	c := newCapturer(0, logger, sourceSpec, fileStore, nil)
 
 	assert.NoError(c.capture())
 
@@ -137,7 +137,7 @@ func TestPageBundlerCaptureBasic(t *testing.T) {
 
 	fileStore := &storeFilenames{}
 
-	c := newCapturer(loggers.NewErrorLogger(), sourceSpec, fileStore, nil)
+	c := newCapturer(0, loggers.NewErrorLogger(), sourceSpec, fileStore, nil)
 
 	assert.NoError(c.capture())
 
@@ -181,7 +181,7 @@ func TestPageBundlerCaptureMultilingual(t *testing.T) {
 
 	sourceSpec := source.NewSourceSpec(ps, ps.BaseFs.Content.Fs)
 	fileStore := &storeFilenames{}
-	c := newCapturer(loggers.NewErrorLogger(), sourceSpec, fileStore, nil)
+	c := newCapturer(0, loggers.NewErrorLogger(), sourceSpec, fileStore, nil)
 
 	assert.NoError(c.capture())
 
@@ -261,7 +261,7 @@ func BenchmarkPageBundlerCapture(b *testing.B) {
 			writeSource(b, fs, filepath.Join(base, "contentonly", fmt.Sprintf("c%d.md", i)), "content")
 		}
 
-		capturers[i] = newCapturer(loggers.NewErrorLogger(), sourceSpec, new(noOpFileStore), nil, base)
+		capturers[i] = newCapturer(0, loggers.NewErrorLogger(), sourceSpec, new(noOpFileStore), nil, base)
 	}
 
 	b.ResetTimer()
