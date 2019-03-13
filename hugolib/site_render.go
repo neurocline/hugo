@@ -16,6 +16,7 @@ package hugolib
 import (
 	"fmt"
 	"path"
+	"path/filepath"
 	"strings"
 	"sync"
 
@@ -164,7 +165,12 @@ func pageRenderer(s *Site, pages <-chan *Page, results chan<- error, wg *sync.Wa
 					continue
 				}
 
-				s.Log.DEBUG.Printf("Render %s to %q with layouts %q", pageOutput.Kind, targetPath, layouts)
+				// Show slim version at INFO level, extra details at DEBUG level
+				// TBD need to fix logging so that goroutine logging isn't intermingled
+				renderMsg := fmt.Sprintf("Render type=%q lang=%q format=%q to %q",
+					pageOutput.Kind, s.Language.Lang, pageOutput.outputFormat.Name, filepath.ToSlash(targetPath))
+				s.Log.INFO.Printf("%s", renderMsg)
+				s.Log.DEBUG.Printf("%s (with layouts %q)", renderMsg, layouts)
 
 				if err := s.renderAndWritePage(&s.PathSpec.ProcessingStats.Pages, "page "+pageOutput.FullFilePath(), targetPath, pageOutput, layouts...); err != nil {
 					results <- err

@@ -1747,16 +1747,22 @@ func (s *Site) renderForLayouts(name string, d interface{}, w io.Writer, layouts
 
 	templ = s.findFirstTemplate(layouts...)
 	if templ == nil {
-		log := s.Log.WARN
+		// Show one-time WARN-level message about missing layouts
+		// (some layouts only get an INFO-level message, because they are optional).
+		missingLayoutMsg := fmt.Sprintf("No layout for type=%q lang=%q", name, s.Language.Lang)
+		if p, ok := d.(*PageOutput); ok {
+			missingLayoutMsg = fmt.Sprintf("%s output format=%q", missingLayoutMsg, p.outputFormat.Name)
+		}
 		if infoOnMissingLayout[name] {
-			log = s.Log.INFO
+			s.Log.INFO.Printf("%s\n", missingLayoutMsg)
+		} else {
+			helpers.DistinctWarnLog.Printf("%s", missingLayoutMsg)
 		}
 
-		if p, ok := d.(*PageOutput); ok {
-			log.Printf("Found no layout for %q, language %q, output format %q: create a template below /layouts with one of these filenames: %s\n", name, s.Language.Lang, p.outputFormat.Name, layoutsLogFormat(layouts))
-		} else {
-			log.Printf("Found no layout for %q, language %q: create a template below /layouts with one of these filenames: %s\n", name, s.Language.Lang, layoutsLogFormat(layouts))
-		}
+		// Add DEBUG output with extra information. This repeats the short message because
+		// we might not have shown it (due to the use of DistinctWarnLog)
+		s.Log.DEBUG.Printf("%s: create a template below /layouts with one of these filenames: %s",
+			missingLayoutMsg, layoutsLogFormat(layouts))
 		return nil
 	}
 
